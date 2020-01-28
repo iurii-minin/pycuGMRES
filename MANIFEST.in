@@ -1,0 +1,3 @@
+recursive-include pycuGMRES/CUDA\ C\ ++\ sources *.cu
+recursive-include pycuGMRES/CUDA\ C\ ++\ sources *.cuh
+recursive-include pycuGMRES/Shared\ object\ generating *.sh

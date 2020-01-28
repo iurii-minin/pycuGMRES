@@ -1,0 +1,8 @@
+MANIFEST.in
+README.md
+setup.py
+pycuGMRES/__init__.py
+pycuGMRES.egg-info/PKG-INFO
+pycuGMRES.egg-info/SOURCES.txt
+pycuGMRES.egg-info/dependency_links.txt
+pycuGMRES.egg-info/top_level.txt
