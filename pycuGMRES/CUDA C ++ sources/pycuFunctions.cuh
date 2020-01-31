@@ -96,7 +96,7 @@ void pycuSetPointerMode(cublasHandle_t *handle_p, cublasPointerMode_t mode)
     cublascall(cublasSetPointerMode(*handle_p, mode));
 }
 
-void pycuRelErr(cuComplex *dev_solution, cuComplex *dev_analytical_solution, unsigned int N, cublasHandle_t *handle_p)
+float pycuRelErr(cuComplex *dev_solution, cuComplex *dev_analytical_solution, unsigned int N, cublasHandle_t *handle_p)
 {
     float h_result = 0.f;
     float h_norm_analytical_solution = 0.f;
@@ -127,7 +127,11 @@ void pycuRelErr(cuComplex *dev_solution, cuComplex *dev_analytical_solution, uns
 
     h_result = h_result / h_norm_analytical_solution;
 
+    
+
     fprintf(stderr, "relative_error:\t%f\n", h_result);
+
+    return h_result;
 }
 
 
@@ -178,4 +182,9 @@ void pycuDestroySubsidiary(devSubsidiary *dev_subs)
 {
     cudacall(cudaFree(dev_subs->dev_orthogonal_basis));
     cudacall(cudaFree(dev_subs->dev_info));
+}
+
+void pycuDeviceReset()
+{
+    cudaDeviceReset();
 }

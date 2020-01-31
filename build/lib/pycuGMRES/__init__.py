@@ -40,7 +40,7 @@ def get_function(fun_description, path_to_so):
 def get_cylinder_mask(m):    
     cylinder_mask = np.zeros((m, m)).astype('bool')
     x, y = np.mgrid[0:m, 0:m]
-    cylinder_mask[(x- m/3)**2 + (y - m / 2)**2 <= (m/ 6)**2 ] = True
+    cylinder_mask[(x- m/3)**2 + (y - m / 2)**2 <= (m/ 6) ** 2 ] = True
     return cylinder_mask.reshape(-1)
 
 def get_greenfun(r,k):
@@ -129,7 +129,7 @@ def visualize(data, wavelength_per_domain = 10, title = "",cmap='magma', title_m
     else:        
             plt.savefig('Python_images/'+title+'.%i.png' % iteration, bbox_inches = 'tight')
     
-def get_n_timestamps_val_improved(maxiter = 100): #Comparables/new
+def get_n_timestamps_val(maxiter = 100): #Comparables/new
     n_timestamps  = 1; #short_indexed_text_array = []
     n_timestamps += 1; #short_indexed_text_array.append("Initialization (malloc)") #_1_ !_
     n_timestamps += 1; #short_indexed_text_array.append("G_x_fft_matvec for A*x0") #_2_ !_
@@ -184,10 +184,10 @@ def get_n_timestamps_val_improved(maxiter = 100): #Comparables/new
     
     return n_timestamps;
 
-def get_n_timestamps_array_improved(max_maxiter = 50):
+def get_n_timestamps_array(max_maxiter = 50):
     array = []
     for maxiter in range(max_maxiter):
-        array.append(get_n_timestamps_val_improved(maxiter))
+        array.append(get_n_timestamps_val(maxiter))
     return array
 
 def get_nano_time(h_computation_times):
@@ -200,10 +200,10 @@ def get_nano_time(h_computation_times):
 
 FOLDERGMRESdir = pkg_resources.resource_filename('pycuGMRES', '')
 
-print(FOLDERGMRESdir)
+#print(FOLDERGMRESdir)
 prefix = FOLDERGMRESdir + '/Shared object generating/'
 print(os.popen('bash '+ '"' + prefix + 'compile_cpp.sh' + '" "' + FOLDERGMRESdir + '"').read())
-path_to_so = prefix + 'TestLib.so'
+path_to_so = prefix + 'cuGMRES.so'
 
 pycumalloc = get_function('pycumalloc', path_to_so)
 pycumalloc.argtypes = [c_uint, c_size_t]
@@ -267,6 +267,9 @@ pycuRelErr.argtypes = [
                               c_uint,
                               POINTER(c_longlong)
                       ]
+pycuRelErr.restype = c_float
+
+pycuDeviceReset = get_function('pycuDeviceReset', path_to_so)
 
 pycuGMRES = get_function('pycuGMRES', path_to_so)
 pycuGMRES.argtypes = [
