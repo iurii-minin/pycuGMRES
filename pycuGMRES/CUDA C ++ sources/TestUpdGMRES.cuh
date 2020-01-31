@@ -107,7 +107,7 @@ void pycuTestUpdGMRES(cuComplex *dev_analytical_solution)
 				cuComplex *h_gamma_array = p_h_gamma_arrays[pow_cur - pow_st];
 //				cuComplex *h_analytical_solution = p_h_anal_sols[pow_cur - pow_st];
 				cuComplex *dev_gamma_array;
-				cuComplex *dev_analytical_solution;
+//				cuComplex *dev_analytical_solution;
 				cuComplex *dev_solution;
 				float *dev_actual_residual;
 				float h_result = 0.f;
@@ -118,7 +118,7 @@ void pycuTestUpdGMRES(cuComplex *dev_analytical_solution)
 
 				cudacall(cudaMalloc((void**)&dev_mask, N * N * sizeof(bool)));
 				cudacall(cudaMalloc((void**)&dev_solution, N * N * sizeof(cuComplex)));
-				cudacall(cudaMalloc((void**)&dev_analytical_solution, N * N * sizeof(cuComplex)));
+//				cudacall(cudaMalloc((void**)&dev_analytical_solution, N * N * sizeof(cuComplex)));
 
 
 

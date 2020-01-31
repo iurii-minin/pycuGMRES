@@ -7,6 +7,46 @@
 from pycuGMRES import *
 
 
+# In[3]:
+
+
+pycuTestGMRES()
+
+
+# In[3]:
+
+
+pow_given = 10
+        
+N = 1 << pow_given
+Nsqrd = 1 << (pow_given << 1)
+
+
+# In[5]:
+
+
+file_an_sol = '/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Input/analytical_solution_' +                    str (N) + '.txt'
+
+h_analytical_solution = (c_complex * Nsqrd )()    # cuComplex *dev_analytical_solution
+analytical_solution = get_complex_array(file_an_sol)
+py_to_ctype(analytical_solution, h_analytical_solution)
+dev_analytical_solution = pycumalloc(Nsqrd, c_size_t(sizeof(c_complex)))
+pycuhost2gpu(h_analytical_solution, dev_analytical_solution, Nsqrd, c_size_t(sizeof(c_complex)))
+dev_analytical_solution = cast(dev_analytical_solution, POINTER(c_complex))
+
+
+# In[6]:
+
+
+pycuTestUpdGMRES(dev_analytical_solution)
+
+
+# In[7]:
+
+
+pycuFree(dev_analytical_solution)
+
+
 # In[2]:
 
 
