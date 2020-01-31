@@ -21,8 +21,8 @@ void pycuTestGMRES()
 	char buffer[1024];
 	float tolerance = 0.001f;//0.2f;
 
-	unsigned int rep_st = 30;
-	unsigned int rep_en = 30;
+	unsigned int rep_st = 0;
+	unsigned int rep_en = 0;
 
 	unsigned int pow_st = 10;
 	unsigned int pow_en = 10;
@@ -30,7 +30,7 @@ void pycuTestGMRES()
 	unsigned int min_maxiter = 30;
 	unsigned int max_maxiter = 30;
 
-	unsigned int *n_timestamps_array = get_n_timestamps_array_improved((unsigned int)max_maxiter);
+	unsigned int *n_timestamps_array = get_n_timestamps_array_improved((unsigned int)max_maxiter + 1);
 
 
 	devSubsidiary dev_subs[1];
