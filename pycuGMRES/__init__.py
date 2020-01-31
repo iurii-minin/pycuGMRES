@@ -272,12 +272,6 @@ pycuDeviceReset = get_function('pycuDeviceReset', path_to_so)
 
 pycuTestGMRES = get_function('pycuTestGMRES', path_to_so)
 
-pycuTestUpdGMRES = get_function('pycuTestUpdGMRES', path_to_so)
-pycuTestUpdGMRES.argtypes = [
-				POINTER(c_complex), # cuComplex *dev_analytical_solution
-				POINTER(c_complex), # cuComplex *dev_gamma_array
-]
-
 pycuFFTC2C = get_function('pycuFFTC2C', path_to_so)
 pycuFFTC2C.argtypes = [
                               POINTER(c_complex), # cuComplex *dev_input
@@ -302,5 +296,8 @@ pycuGMRES.argtypes = [
                       POINTER(c_longlong),       # cublasHandle_t *handle_p
                       POINTER(c_longlong),       # cusolverDnHandle_t *cusolverH_p
                       POINTER(c_devSubsidiary),  # dev_subsidiary *dev_subs
-                      POINTER(c_timespec)        # timespec *computation_times
+                      POINTER(c_timespec),       # timespec *computation_times
+                      c_void_p,       		 # void *devh_debug1
+                      c_void_p,       		 # void *devh_debug2
+                      c_void_p        		 # void *devh_debug3
                                            ]

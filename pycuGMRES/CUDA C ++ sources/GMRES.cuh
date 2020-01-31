@@ -35,7 +35,10 @@ void pycuGMRES(
                     cublasHandle_t *handle_p,
                     cusolverDnHandle_t *cusolverH_p,
                     devSubsidiary *dev_subs,
-                    timespec *h_computation_times
+                    timespec *h_computation_times,
+                    void *devh_debugging1,
+                    void *devh_debugging2,
+                    void *devh_debugging3
                )
 {
 	unsigned int clock_i = 0;
