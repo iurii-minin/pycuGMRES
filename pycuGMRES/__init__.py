@@ -280,6 +280,13 @@ pycuTestUpdGMRES.argtypes = [
 				POINTER(c_complex), # cuComplex *dev_gamma_array
 ]
 
+pycuFFTC2C = get_function('pycuFFTC2C', path_to_so)
+pycuFFTC2C.argtypes = [
+                              POINTER(c_complex), # cuComplex *dev_input
+                              POINTER(c_complex), # cuComplex *dev_output
+	                      c_uint              # const cufftHandle plan
+		      ]
+
 pycuGMRES = get_function('pycuGMRES', path_to_so)
 pycuGMRES.argtypes = [
                       POINTER(c_bool),           # bool *dev_mask

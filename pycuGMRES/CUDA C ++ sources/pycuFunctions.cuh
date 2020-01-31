@@ -188,3 +188,9 @@ void pycuDeviceReset()
 {
     cudaDeviceReset();
 }
+
+void pycuFFTC2C(cuComplex *dev_input, cuComplex *dev_output, cufftHandle plan)
+{
+    cufftcall(cufftExecC2C(plan, (cuComplex *)dev_input, (cuComplex *)dev_output, CUFFT_FORWARD));
+    cudacheckSYN();
+}

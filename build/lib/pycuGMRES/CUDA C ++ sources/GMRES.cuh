@@ -38,11 +38,6 @@ void pycuGMRES(
                     timespec *h_computation_times
                )
 {
-
-	cufftcall(cufftExecC2C(plan, (cuComplex *)dev_gamma_array, (cuComplex *)dev_gamma_array, CUFFT_FORWARD));
-	cudacheckSYN();
-
-
 	unsigned int clock_i = 0;
 
 	clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_0_
