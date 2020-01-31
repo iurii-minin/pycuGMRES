@@ -1,15 +1,16 @@
+version = "1.1.3.5"
 from setuptools import setup
 
 with open("README.md", "r") as fh:
        long_description = fh.read()
 
 setup(name='pycuGMRES',
-      version='1.1.3.4',
+      version = version,
       description = 'Fast CUDA C++ GMRES implementation for Toeplitz-like (Toeplitz, Hankel, Circulant) matrices and mixed (combinations of Diagonal ones and Toeplitz-like ones) matrices.',
       long_description = long_description,
       url='https://github.com/archilless/pycuGMRES',
-      author='Iurii Minin',
-      author_email='iurii.minin@skoltech.ru',
+      author='Iurii Borisovich Minin',
+      author_email='iurii.minin@skoltech.ru', #yurii.minin@phystech.edu
       license='MIT',
       packages=['pycuGMRES'],
       classifiers=[

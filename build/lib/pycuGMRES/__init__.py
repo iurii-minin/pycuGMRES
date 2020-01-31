@@ -271,6 +271,10 @@ pycuRelErr.restype = c_float
 
 pycuDeviceReset = get_function('pycuDeviceReset', path_to_so)
 
+
+pycuTestGMRES = get_function('pycuTestGMRES', path_to_so)
+
+
 pycuGMRES = get_function('pycuGMRES', path_to_so)
 pycuGMRES.argtypes = [
                       POINTER(c_bool),           # bool *dev_mask
