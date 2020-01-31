@@ -275,7 +275,10 @@ pycuDeviceReset = get_function('pycuDeviceReset', path_to_so)
 pycuTestGMRES = get_function('pycuTestGMRES', path_to_so)
 
 pycuTestUpdGMRES = get_function('pycuTestUpdGMRES', path_to_so)
-pycuTestUpdGMRES.argtype = c_complex #cuComplex *dev_analytical_solution
+pycuTestUpdGMRES.argtypes = [
+				POINTER(c_complex), # cuComplex *dev_analytical_solution
+				POINTER(c_complex), # cuComplex *dev_gamma_array
+]
 
 pycuGMRES = get_function('pycuGMRES', path_to_so)
 pycuGMRES.argtypes = [
