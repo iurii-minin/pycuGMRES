@@ -121,12 +121,10 @@ def visualize(data, wavelength_per_domain = 10, title = "",cmap='magma', title_m
     plt.yticks(np.arange(wavelength_per_domain+1)*data.shape[0]/wavelength_per_domain, np.arange(wavelength_per_domain+1), fontsize = 35)
     plt.xlabel("Ox, wavelength", fontsize = 35)
     plt.ylabel("Oy, wavelength", fontsize = 35)
-    if iteration is None:
-        if savefig:
-            plt.savefig('Python_images/'+title + '.%.5f.png' % time.time(), bbox_inches = 'tight')                
-        else:
-            plt.savefig('Python_images/'+'7_512_'+title+'.%.5f.png' % 123.12123, bbox_inches = 'tight')
-    else:        
+    if savefig:
+        if iteration is None:
+            plt.savefig('Python_images/'+title + '.%.5f.png' % time.time(), bbox_inches = 'tight')
+        else:        
             plt.savefig('Python_images/'+title+'.%i.png' % iteration, bbox_inches = 'tight')
     
 def get_n_timestamps_val(maxiter = 100): #Comparables/new
