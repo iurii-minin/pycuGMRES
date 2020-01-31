@@ -95,7 +95,7 @@ void pycuTestGMRES()
 	}
 
 
-	for (unsigned int repetition_i = rep_st; repetition_i < rep_en; repetition_i ++)
+	for (unsigned int repetition_i = rep_st; repetition_i < rep_en + 1; repetition_i ++)
 	{	// int maxiter = 28;
 		for (unsigned int maxiter = min_maxiter; maxiter < max_maxiter + 1; maxiter ++)
 		{
