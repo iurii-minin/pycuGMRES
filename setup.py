@@ -1,5 +1,4 @@
-version = "1.1.3.8.1"
-
+version = "1.1.3.8.2"
 from setuptools import setup
 
 with open("README.md", "r") as fh:

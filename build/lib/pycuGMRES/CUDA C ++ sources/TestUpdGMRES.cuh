@@ -1,21 +1,6 @@
-//#include <sstream>
-//#include <unistd.h>
+unsigned int *get_n_timestamps_array_improved(unsigned int max_maxiter);
 
-#include <cuda_runtime.h>
-#include <cusolverDn.h>
-#include <string>
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "GMRES_kernels.cuh"
-#include "saveGPU.cuh"
-#include "Fast_matvec.cuh"
-#include "pycuFunctions.cuh"
-#include "GMRES.cuh"
-#include "TestUpdGMRES.cuh"
-
-void pycuTestGMRES()
+void pycuTestUpdGMRES(cuComplex *dev_analytical_solution)
 {		
 	char buffer[1024];
 	float tolerance = 0.001f;//0.2f;
@@ -120,7 +105,7 @@ void pycuTestGMRES()
 				bool *h_mask = p_h_masks[pow_cur - pow_st];
 				bool h_res_vs_tol = true;
 				cuComplex *h_gamma_array = p_h_gamma_arrays[pow_cur - pow_st];
-				cuComplex *h_analytical_solution = p_h_anal_sols[pow_cur - pow_st];
+//				cuComplex *h_analytical_solution = p_h_anal_sols[pow_cur - pow_st];
 				cuComplex *dev_gamma_array;
 				cuComplex *dev_analytical_solution;
 				cuComplex *dev_solution;
@@ -138,7 +123,7 @@ void pycuTestGMRES()
 
 
 
-				cudacall(cudaMemcpy(dev_analytical_solution, h_analytical_solution, N * N * sizeof(cuComplex), cudaMemcpyHostToDevice));
+//				cudacall(cudaMemcpy(dev_analytical_solution, h_analytical_solution, N * N * sizeof(cuComplex), cudaMemcpyHostToDevice));
 
 
 				cublascall(cublasScnrm2(handle, N * N,
@@ -271,7 +256,7 @@ void pycuTestGMRES()
 				cudacall(cudaFree((bool *)dev_mask));
 				cudacall(cudaFree((cuComplex *)dev_solution));
 				cudacall(cudaFree((cuComplex *)dev_gamma_array));
-				cudacall(cudaFree((cuComplex *)dev_analytical_solution));
+//				cudacall(cudaFree((cuComplex *)dev_analytical_solution));
 				cufftcall(cufftDestroy(plan));
 				cusolverDnDestroy(cusolverH);
 				free((timespec *)h_computation_times);
@@ -282,4 +267,83 @@ void pycuTestGMRES()
 	}
 
 	free(n_timestamps_array);
+}
+
+
+
+
+
+unsigned int get_n_timestamps_val_improved(unsigned int maxiter) //Comparables/new
+{
+    unsigned int n_timestamps  = 1; //short_indexed_text_array = []
+    n_timestamps ++; //short_indexed_text_array.append("Initialization (malloc)") #_1_ !_
+    n_timestamps ++; //short_indexed_text_array.append("G_x_fft_matvec for A*x0") #_2_ !_
+    n_timestamps ++; //short_indexed_text_array.append("2D_to_1D for A*x0-x0") #_3_
+    n_timestamps ++; //short_indexed_text_array.append("Norm(residual_vec)") #_4_
+    n_timestamps ++; //short_indexed_text_array.append("Condition to iterate") #_5_ !_
+    n_timestamps ++; //short_indexed_text_array.append("Residual_normalization & set_a,b") #_6_
+    
+    unsigned int GMRES_i = 1;
+    
+    if (1)
+    {
+        n_timestamps ++; //short_indexed_text_array.append("Memset(H, 0)") #_7_ !_
+        n_timestamps ++; //short_indexed_text_array.append("G_x_fft_matvec for w=A*v iteration(" + str(GMRES_i) + ")") #_8_
+        n_timestamps ++; //short_indexed_text_array.append("2D_to_1D for w=A*v iteration(" + str(GMRES_i) + ")") #_9_
+        n_timestamps ++; //short_indexed_text_array.append("H_jk = (V_j, w) iteration(" + str(GMRES_i) + ")") #_10_
+        n_timestamps ++; //short_indexed_text_array.append("w = w - H*v iteration(" + str(GMRES_i) + ")") #_11_ !_    
+        n_timestamps ++; //short_indexed_text_array.append("H_jj+1 = norm(w) iteration(" + str(GMRES_i) + ")") #_12_    
+        n_timestamps ++; //short_indexed_text_array.append("1/H_jj+1 iteration(" + str(GMRES_i) + ")") #_13_    
+        n_timestamps ++; //short_indexed_text_array.append("w = w/H_jj+1 iteration(" + str(GMRES_i) + ")") #_14_
+        n_timestamps ++; //short_indexed_text_array.append("Set(J) iteration(" + str(GMRES_i) + ")") #_15_ !_
+        n_timestamps ++; //short_indexed_text_array.append("Set(Jtotal) iteration(" + str(GMRES_i) + ")") #_16_ !_
+        n_timestamps ++; //short_indexed_text_array.append("Update residual iteration(" + str(GMRES_i) + ")") #_17_ !_
+        
+        for (GMRES_i = 1; GMRES_i < maxiter; GMRES_i ++)
+        {  
+            n_timestamps ++; //short_indexed_text_array.append("Condition_check iteration(" + str(GMRES_i) + ")") #_18_
+            n_timestamps ++; //short_indexed_text_array.append("G_x_fft_matvec for w=A*v iteration(" + str(GMRES_i) + ")") #_19_        
+            n_timestamps ++; //short_indexed_text_array.append("2D_to_1D for w=A*v iteration(" + str(GMRES_i) + ")") #_20_     
+                
+            for (unsigned int j = 0; j < GMRES_i + 1; j ++)
+            {
+                n_timestamps ++; //short_indexed_text_array.append("H_jk = (V_j, w) iteration(" + str(GMRES_i) + ", j = " + str(j) + ")") #_21_
+                n_timestamps ++; //short_indexed_text_array.append("w = w - H_jk * V_j iteration(" + str(GMRES_i) + ", j = " + str(j) + ")") #_22_  
+            }       
+                
+            n_timestamps ++; //short_indexed_text_array.append("H_jj+1 = norm(w) iteration(" + str(GMRES_i) + ")") #_23_
+            n_timestamps ++; //short_indexed_text_array.append("1/H_jj+1 iteration(" + str(GMRES_i) + ")") #_24_
+            n_timestamps ++; //short_indexed_text_array.append("w = w/H_jj+1 iteration(" + str(GMRES_i) + ")") #_25_    
+            n_timestamps ++; //short_indexed_text_array.append("H_temp=Jtotal * H iteration(" + str(GMRES_i) + ")") #_26_
+            n_timestamps ++; //short_indexed_text_array.append("Set(J) iteration(" + str(GMRES_i) + ")") #_27_ !_
+            n_timestamps ++; //short_indexed_text_array.append("Jtotal = J*Jtotal iteration(" + str(GMRES_i) + ")") #_28_
+            n_timestamps ++; //short_indexed_text_array.append("Update residual iteration(" + str(GMRES_i) + ")") #_29_ !_
+        }
+    }
+            
+    n_timestamps ++; //short_indexed_text_array.append("HH = Jtotal * H") #_30_
+    n_timestamps ++; //short_indexed_text_array.append("cc <- Jtotal") #_31_
+    n_timestamps ++; //short_indexed_text_array.append("Initialize_small_LES(HH, cc)") #_32_
+    n_timestamps ++; //short_indexed_text_array.append("Process_small_LES(HH, cc)") #_33_
+    
+    for (unsigned int j = 0; j < GMRES_i; j++)
+    {        
+        n_timestamps ++; //short_indexed_text_array.append("Add iteration(j = " + str(j) + ")") #_34_
+    }
+        
+    n_timestamps ++; //short_indexed_text_array.append("set(Output_p)") #_35_        
+    n_timestamps ++; //short_indexed_text_array.append("Free in postprocessing") #_36_
+    
+    return n_timestamps;
+}
+
+unsigned int *get_n_timestamps_array_improved(unsigned int max_maxiter)
+{
+    unsigned int *n_timestamps_array = (unsigned int *)malloc(max_maxiter * sizeof(unsigned int));
+
+    for (unsigned int maxiter = 0; maxiter < max_maxiter; maxiter ++)
+    {
+        n_timestamps_array[maxiter] = get_n_timestamps_val_improved((unsigned int)maxiter);
+    }
+    return n_timestamps_array;
 }
