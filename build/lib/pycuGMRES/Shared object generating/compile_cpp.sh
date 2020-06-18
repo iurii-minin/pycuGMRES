@@ -1,8 +1,8 @@
 FOLDER=$1
-soFILE=${FOLDER}/Shared\ object\ generating/cuGMRES.so
+soFILE="${FOLDER}/Shared\ object\ generating/cuGMRES.so"
 
 if test -f "$soFILE"; then
-    rm cuGMRES.so
+    rm $soFILE
 fi
 
 echo importing pycuGMRES ...
