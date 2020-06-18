@@ -1,14 +1,14 @@
 FOLDER=$1
-FILE=cuGMRES.so
+soFILE=${FOLDER}/Shared\ object\ generating/cuGMRES.so
 
-if test -f "$FILE"; then
+if test -f "$soFILE"; then
     rm cuGMRES.so
 fi
 
 echo importing pycuGMRES ...
 echo nvcc -lcublas -lcufft -lcusolver -O3 --compiler-options '-fPIC' -shared \"CUDA\ C\ ++\ sources\" -o cuGMRES.so
-nvcc -lcublas -lcufft -lcusolver -O3 --compiler-options '-fPIC' -shared ${FOLDER}/CUDA\ C\ ++\ sources/TestGMRES.cu -o ${FOLDER}/Shared\ object\ generating/cuGMRES.so
-if test -f "$FILE"; then
+nvcc -lcublas -lcufft -lcusolver -O3 --compiler-options '-fPIC' -shared ${FOLDER}/CUDA\ C\ ++\ sources/TestGMRES.cu -o $soFILE
+if test -f "$soFILE"; then
     echo CUDA C++ library has been created!
 else 
     echo FATAL ERROR: CUDA C++ library creating failed!
