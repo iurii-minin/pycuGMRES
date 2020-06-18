@@ -296,8 +296,8 @@ pycuGMRES.argtypes = [
                       POINTER(c_longlong),       # cublasHandle_t *handle_p
                       POINTER(c_longlong),       # cusolverDnHandle_t *cusolverH_p
                       POINTER(c_devSubsidiary),  # dev_subsidiary *dev_subs
-                      POINTER(c_timespec),       # timespec *computation_times
-                      c_void_p,       		 # void *devh_debug1
-                      c_void_p,       		 # void *devh_debug2
-                      c_void_p        		 # void *devh_debug3
+                      POINTER(c_timespec)        # timespec *computation_times
+              #        c_void_p,       		 # void *devh_debug1
+              #        c_void_p,       		 # void *devh_debug2
+              #        c_void_p        		 # void *devh_debug3
                                            ]
