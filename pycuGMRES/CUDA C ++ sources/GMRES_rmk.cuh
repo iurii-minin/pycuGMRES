@@ -102,7 +102,7 @@ void pycuGMRESrmk(
 
 //			bool *dev_mask;
 //			bool *h_mask = p_h_masks[0];
-		bool h_res_vs_tol = true;
+//		bool h_res_vs_tol = true;
 		cuComplex *h_gamma_array = p_h_gamma_arrays[0];
 		cuComplex *h_analytical_solution = p_h_anal_sols[0];
 //		cuComplex *dev_gamma_array;
@@ -142,9 +142,9 @@ void pycuGMRESrmk(
 		cudacheckSYN();
 	//==================================== End: get_gamma_array connected to MKL 2D Green's function values in Bessel function =========================
 
-		time_t clock_time;
-		float diff_time = 0.f;
-		float diff_average = 0.f;
+//		time_t clock_time;
+//		float diff_time = 0.f;
+//		float diff_average = 0.f;
 //				cuComplex alpha;
 //				alpha.x = -1.f;
 //				alpha.y = 0.f;
@@ -170,7 +170,7 @@ void pycuGMRESrmk(
 
 			memset(h_computation_times, 0, n_timestamps_array[maxiter] * sizeof(timespec));
 
-			clock_time = clock();
+//			clock_time = clock();
 
 			pycuGMRES(	
 						  (bool *)dev_mask,
@@ -181,7 +181,7 @@ void pycuGMRESrmk(
 						  tolerance,
 						  (unsigned int *)GMRES_n,
 						  (float *)dev_actual_residual,
-						  (bool *)&h_res_vs_tol,
+						  (bool *)h_res_vs_tol_p,
 						  N,
 						  (cuComplex *)dev_gamma_array,
 						  plan,
@@ -191,7 +191,7 @@ void pycuGMRESrmk(
 						  (timespec *)h_computation_times
 				);
 
-			diff_time = (float)(clock() - clock_time) / (float)(CLOCKS_PER_SEC);
+//			diff_time = (float)(clock() - clock_time) / (float)(CLOCKS_PER_SEC);
 
 			pycuDestroySubsidiary((devSubsidiary *)dev_subs_internal);
 		}
