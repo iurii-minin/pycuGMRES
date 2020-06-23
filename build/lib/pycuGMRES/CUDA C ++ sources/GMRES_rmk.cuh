@@ -25,7 +25,7 @@ void pycuGMRESrmk(
 	unsigned int *n_timestamps_array = get_n_timestamps_array_improved((unsigned int)maxiter + 1);
 
 
-	devSubsidiary dev_subs_internal[1];
+//	devSubsidiary dev_subs_internal[1];
 
 
 	cuComplex **p_h_anal_sols = (cuComplex **) malloc((1) * sizeof(cuComplex *));
@@ -154,15 +154,15 @@ void pycuGMRESrmk(
 
 //			cudacall(cudaMalloc((void**)&dev_actual_residual, (maxiter + 1) * sizeof(float)));
 
-			const char *allocation_result = pycuGetSubsidiary(
-						(devSubsidiary *)dev_subs_internal, 
-						N, 
-						maxiter);
+//			const char *allocation_result = pycuGetSubsidiary(
+//						(devSubsidiary *)dev_subs, 
+//						N, 
+//						maxiter);
 
-			fprintf(stderr, "Allocation memory: %s\n", allocation_result);
+//			fprintf(stderr, "Allocation memory: %s\n", allocation_result);
 
-			cublasSetPointerMode(*handle_p, CUBLAS_POINTER_MODE_DEVICE);
-			fprintf(stderr, "maxiter = %i\trepetition_i = %i\n", maxiter, repetition_i);
+//			cublasSetPointerMode(*handle_p, CUBLAS_POINTER_MODE_DEVICE);
+//			fprintf(stderr, "maxiter = %i\trepetition_i = %i\n", maxiter, repetition_i);
 
 //			init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
 //			cudacheckSYN();
@@ -193,7 +193,7 @@ void pycuGMRESrmk(
 
 //			diff_time = (float)(clock() - clock_time) / (float)(CLOCKS_PER_SEC);
 
-			pycuDestroySubsidiary((devSubsidiary *)dev_subs_internal);
+//			pycuDestroySubsidiary((devSubsidiary *)dev_subs);
 		}
 
 		{
