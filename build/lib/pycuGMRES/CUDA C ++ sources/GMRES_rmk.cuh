@@ -164,8 +164,8 @@ void pycuGMRESrmk(
 			cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_DEVICE);
 			fprintf(stderr, "maxiter = %i\trepetition_i = %i\n", maxiter, repetition_i);
 
-//				init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
-//				cudacheckSYN();
+			init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
+			cudacheckSYN();
 
 			memset(h_computation_times, 0, n_timestamps_array[maxiter] * sizeof(timespec));
 
