@@ -91,8 +91,8 @@ void pycuGMRESrmk(
 		dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
 		dim3 threads(Q, Q);
 //		cufftHandle plan;
-		cublasHandle_t handle;
-		cublascall(cublasCreate_v2(&handle));
+//		cublasHandle_t handle;
+//		cublascall(cublasCreate_v2(&handle));
 //		cufftcall(cufftPlan2d(&plan, 2 * N - 1, 2 * N - 1, CUFFT_C2C));
 		cudaStream_t stream = NULL;
 		cusolverDnHandle_t cusolverH = NULL;
@@ -104,30 +104,30 @@ void pycuGMRESrmk(
 //			bool *h_mask = p_h_masks[0];
 //		bool h_res_vs_tol = true;
 		cuComplex *h_gamma_array = p_h_gamma_arrays[0];
-		cuComplex *h_analytical_solution = p_h_anal_sols[0];
+//		cuComplex *h_analytical_solution = p_h_anal_sols[0];
 //		cuComplex *dev_gamma_array;
-		cuComplex *dev_analytical_solution;
+//		cuComplex *dev_analytical_solution;
 //				cuComplex *dev_solution;
 //		float *dev_actual_residual;
 //				float h_result = 0.f;
-		float h_norm_analytical_solution = 0.f;
+//		float h_norm_analytical_solution = 0.f;
 //		unsigned int GMRES_n = 0;
 		timespec *h_computation_times = (timespec *) malloc(n_timestamps_array[maxiter] * sizeof(timespec));
-		cudacall(cudaSetDevice(0));
+//		cudacall(cudaSetDevice(0));
 
 //			cudacall(cudaMalloc((void**)&dev_mask, N * N * sizeof(bool)));
 //				cudacall(cudaMalloc((void**)&dev_solution, N * N * sizeof(cuComplex)));
-		cudacall(cudaMalloc((void**)&dev_analytical_solution, N * N * sizeof(cuComplex)));
+//		cudacall(cudaMalloc((void**)&dev_analytical_solution, N * N * sizeof(cuComplex)));
 
 
 
 
-		cudacall(cudaMemcpy(dev_analytical_solution, h_analytical_solution, N * N * sizeof(cuComplex), cudaMemcpyHostToDevice));
+//		cudacall(cudaMemcpy(dev_analytical_solution, h_analytical_solution, N * N * sizeof(cuComplex), cudaMemcpyHostToDevice));
 
 
-		cublascall(cublasScnrm2(handle, N * N,
-					(const cuComplex *)dev_analytical_solution, 1, 
-					(float  *)&h_norm_analytical_solution));
+//		cublascall(cublasScnrm2(handle, N * N,
+//					(const cuComplex *)dev_analytical_solution, 1, 
+//					(float  *)&h_norm_analytical_solution));
 
 
 //			cudacall(cudaMemcpy(dev_mask, h_mask, N * N * sizeof(bool), cudaMemcpyHostToDevice));
@@ -161,7 +161,7 @@ void pycuGMRESrmk(
 
 			fprintf(stderr, "Allocation memory: %s\n", allocation_result);
 
-			cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_DEVICE);
+			cublasSetPointerMode(*handle_p, CUBLAS_POINTER_MODE_DEVICE);
 			fprintf(stderr, "maxiter = %i\trepetition_i = %i\n", maxiter, repetition_i);
 
 //			init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
@@ -185,7 +185,7 @@ void pycuGMRESrmk(
 						  N,
 						  (cuComplex *)dev_gamma_array,
 						  plan,
-						  (cublasHandle_t *)&handle,
+						  (cublasHandle_t *)handle_p,
 						  (cusolverDnHandle_t *)&cusolverH,
 						  (devSubsidiary *)dev_subs,
 						  (timespec *)h_computation_times
@@ -243,11 +243,11 @@ void pycuGMRESrmk(
 //			cudacall(cudaFree((bool *)dev_mask));
 //				cudacall(cudaFree((cuComplex *)dev_solution));
 //		cudacall(cudaFree((cuComplex *)dev_gamma_array));
-		cudacall(cudaFree((cuComplex *)dev_analytical_solution));
+//		cudacall(cudaFree((cuComplex *)dev_analytical_solution));
 //		cufftcall(cufftDestroy(plan));
 		cusolverDnDestroy(cusolverH);
 		free((timespec *)h_computation_times);
-		cublascall(cublasDestroy_v2(handle));
+//		cublascall(cublasDestroy_v2(handle));
 //		cudacall(cudaFree((float *)dev_actual_residual));
 	}
 
