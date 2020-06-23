@@ -111,7 +111,7 @@ void pycuGMRESrmk(
 		float *dev_actual_residual;
 //				float h_result = 0.f;
 		float h_norm_analytical_solution = 0.f;
-		unsigned int GMRES_n = 0;
+//		unsigned int GMRES_n = 0;
 		timespec *h_computation_times = (timespec *) malloc(n_timestamps_array[maxiter] * sizeof(timespec));
 		cudacall(cudaSetDevice(0));
 
@@ -179,7 +179,7 @@ void pycuGMRESrmk(
 						  h_index_of_max,
 						  maxiter,
 						  tolerance,
-						  (unsigned int *)&GMRES_n,
+						  (unsigned int *)GMRES_n,
 						  (float *)dev_actual_residual,
 						  (bool *)&h_res_vs_tol,
 						  N,
@@ -197,18 +197,18 @@ void pycuGMRESrmk(
 		}
 
 		{
-			fprintf(stderr, "Files writing\n");
+//			fprintf(stderr, "Files writing\n");
 
-			sprintf(buffer, "time_%u/solution_sample", N);
-			save_test_GPU((char *)buffer, (cuComplex *)dev_solution, maxiter * 100 + repetition_i, N * N);
-			fprintf(stderr, "diff_time = %f\n", diff_time);
+//			sprintf(buffer, "time_%u/solution_sample", N);
+//			save_test_GPU((char *)buffer, (cuComplex *)dev_solution, maxiter * 100 + repetition_i, N * N);
+//			fprintf(stderr, "diff_time = %f\n", diff_time);
 
-			sprintf(buffer, "time_%u/maxiter", N);
-			save_test_F_CPU((char *)buffer, (float *)&diff_time, maxiter * 100 + repetition_i, 1);
-			sprintf(buffer, "time_%u/residual", N);
-			save_test_F_GPU((char *)buffer, (float *)dev_actual_residual + GMRES_n, maxiter * 100 + repetition_i, 1);
-			sprintf(buffer, "time_%u/times", N);
-			save_test_timespec_CPU((char *)buffer, (timespec *)h_computation_times, maxiter * 100 + repetition_i, n_timestamps_array[maxiter]);
+//			sprintf(buffer, "time_%u/maxiter", N);
+//			save_test_F_CPU((char *)buffer, (float *)&diff_time, maxiter * 100 + repetition_i, 1);
+//			sprintf(buffer, "time_%u/residual", N);
+//			save_test_F_GPU((char *)buffer, (float *)dev_actual_residual + GMRES_n, maxiter * 100 + repetition_i, 1);
+//			sprintf(buffer, "time_%u/times", N);
+//			save_test_timespec_CPU((char *)buffer, (timespec *)h_computation_times, maxiter * 100 + repetition_i, n_timestamps_array[maxiter]);
 
 //					cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_HOST);
 
@@ -236,7 +236,7 @@ void pycuGMRESrmk(
 //					save_test_F_CPU((char *)buffer, (float *)&h_result, maxiter * 100 + repetition_i, 1);
 		}
 
-		fprintf(stderr, "diff = %f\n", diff_average);
+//		fprintf(stderr, "diff = %f\n", diff_average);
 
 //			saveGPUrealtxt_C(dev_solution, "/output/solution.txt", N * N);
 
