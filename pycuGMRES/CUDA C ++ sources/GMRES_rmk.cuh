@@ -90,10 +90,10 @@ void pycuGMRESrmk(
 
 		dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
 		dim3 threads(Q, Q);
-		cufftHandle plan;
+//		cufftHandle plan;
 		cublasHandle_t handle;
 		cublascall(cublasCreate_v2(&handle));
-		cufftcall(cufftPlan2d(&plan, 2 * N - 1, 2 * N - 1, CUFFT_C2C));
+//		cufftcall(cufftPlan2d(&plan, 2 * N - 1, 2 * N - 1, CUFFT_C2C));
 		cudaStream_t stream = NULL;
 		cusolverDnHandle_t cusolverH = NULL;
 		cusolvercall(cusolverDnCreate(&cusolverH));
@@ -244,7 +244,7 @@ void pycuGMRESrmk(
 //				cudacall(cudaFree((cuComplex *)dev_solution));
 //		cudacall(cudaFree((cuComplex *)dev_gamma_array));
 		cudacall(cudaFree((cuComplex *)dev_analytical_solution));
-		cufftcall(cufftDestroy(plan));
+//		cufftcall(cufftDestroy(plan));
 		cusolverDnDestroy(cusolverH);
 		free((timespec *)h_computation_times);
 		cublascall(cublasDestroy_v2(handle));
