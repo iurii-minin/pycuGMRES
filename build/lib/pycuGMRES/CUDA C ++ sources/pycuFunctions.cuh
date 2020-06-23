@@ -116,8 +116,8 @@ float pycuRelErr(	cuComplex *dev_solution,
 
     cudacall(cudaMalloc(&dev_C, N * N * sizeof(cuComplex)));
 
-    A_minus_B_kernel <<< blocks, threads >>> (	(cuComplex *)dev_analytical_solution,
-						(cuComplex *)dev_solution,
+    A_minus_B_kernel <<< blocks, threads >>> (	(cuComplex *)dev_solution,
+						(cuComplex *)dev_analytical_solution,
 						(cuComplex *)dev_C);
     cudacheckSYN();
 
