@@ -256,6 +256,17 @@ __global__ void residual_normalization_kernel(	cuComplex *dev_residual_vec,
 }
 
 
+__global__ void A_minus_B_kernel(	cuComplex *dev_A,
+					cuComplex *dev_B,
+					cuComplex *dev_C)
+{
+	unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+	dev_C[index].x = dev_A[index].x - dev_B[index].x;
+	dev_C[index].y = dev_A[index].y - dev_B[index].y;
+}
+
+
 __global__ void set_alpha_beta_kernel(cuComplex *cu_alpha, cuComplex *cu_beta)
 {
 	switch(blockIdx.x)
