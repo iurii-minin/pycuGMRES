@@ -49,18 +49,11 @@ cusolverDnHandle_t *pycuHandleSolverDn()
 }
 
 
-cuComplex *pycuGetGamma(const cuComplex *h_gamma_array, const unsigned int N, const cufftHandle plan) // typedef unsigned int cufftHandle;
+cuComplex *pycuGetGamma(cuComplex *dev_gamma_array, const unsigned int N, const cufftHandle plan) // typedef unsigned int cufftHandle;
 {
-    cuComplex *dev_gamma_array;
-            //	get_gamma_array((cuComplex **)&dev_gamma_array, (cufftHandle)plan);
-            //	cudacall(cudaMemcpy(h_gamma_array, dev_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyDeviceToHost));
-            //==================================== Begin: get_gamma_array connected to MKL 2D Green's function values in Bessel function =========================
-    cudacall(cudaMalloc((void**)&dev_gamma_array,  (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex)));
-    cudacall(cudaMemcpy(dev_gamma_array, h_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyHostToDevice));
-
     cufftcall(cufftExecC2C(plan, (cuComplex *)dev_gamma_array, (cuComplex *)dev_gamma_array, CUFFT_FORWARD));
     cudacheckSYN();
-            //==================================== End: get_gamma_array connected to MKL 2D Green's function values in Bessel function =========================
+
     return dev_gamma_array;
 }
 
