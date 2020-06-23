@@ -126,7 +126,7 @@ float pycuRelErr(	cuComplex *dev_solution,
 
 
     cublascall(cublasScnrm2(*handle_p, N * N,
-                        (const cuComplex *)dev_solution, 1, (float  *)&h_result));
+                        (const cuComplex *)dev_C, 1, (float  *)&h_result));
 
 //    fprintf(stderr, "Norm of diff:\t%f\n", h_result);
 
