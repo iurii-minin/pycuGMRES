@@ -28,34 +28,12 @@ void pycuGMRESrmk(
 //	devSubsidiary dev_subs_internal[1];
 
 
-	cuComplex **p_h_anal_sols = (cuComplex **) malloc((1) * sizeof(cuComplex *));
+//	cuComplex **p_h_anal_sols = (cuComplex **) malloc((1) * sizeof(cuComplex *));
 //	bool **p_h_masks = (bool **) malloc((1) * sizeof(bool *));
 	cuComplex **p_h_gamma_arrays = (cuComplex **) malloc((1) * sizeof(cuComplex *));
 
-	p_h_anal_sols[0] = (cuComplex *) malloc( N * N * sizeof(cuComplex) );
+//	p_h_anal_sols[0] = (cuComplex *) malloc( N * N * sizeof(cuComplex) );
 
-	std::string line;
-	sprintf(buffer, "/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Input/analytical_solution_%u.txt", N);
-	std::ifstream analytical_solution_file (buffer);//Python_analytical_solution_%u
-	if (analytical_solution_file.is_open())
-	{
-		unsigned int index = 0;
-		while ( getline (analytical_solution_file, line) )
-		{
-			std::istringstream in_string_stream(line);
-
-			in_string_stream >> p_h_anal_sols[0][index].x >> p_h_anal_sols[0][index].y;
-
-			index++;
-
-		}
-		analytical_solution_file.close();
-	}
-	else
-	{
-		fprintf(stderr, "Unable to open file: %s\n", buffer);
-		exit(1);
-	}
 
 /*
 	p_h_masks[0] = (bool *) malloc(N * N * sizeof(bool));
