@@ -94,11 +94,11 @@ void pycuGMRESrmk(
 //		cublasHandle_t handle;
 //		cublascall(cublasCreate_v2(&handle));
 //		cufftcall(cufftPlan2d(&plan, 2 * N - 1, 2 * N - 1, CUFFT_C2C));
-		cudaStream_t stream = NULL;
-		cusolverDnHandle_t cusolverH = NULL;
-		cusolvercall(cusolverDnCreate(&cusolverH));
-		cudacall(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
-		cusolvercall(cusolverDnSetStream(cusolverH, stream));
+//		cudaStream_t stream = NULL;
+//		cusolverDnHandle_t cusolverH = NULL;
+//		cusolvercall(cusolverDnCreate(&cusolverH));
+//		cudacall(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
+//		cusolvercall(cusolverDnSetStream(cusolverH, stream));
 
 //			bool *dev_mask;
 //			bool *h_mask = p_h_masks[0];
@@ -186,7 +186,7 @@ void pycuGMRESrmk(
 						  (cuComplex *)dev_gamma_array,
 						  plan,
 						  (cublasHandle_t *)handle_p,
-						  (cusolverDnHandle_t *)&cusolverH,
+						  (cusolverDnHandle_t *)&cusolverH_p,
 						  (devSubsidiary *)dev_subs,
 						  (timespec *)h_computation_times
 				);
@@ -245,7 +245,7 @@ void pycuGMRESrmk(
 //		cudacall(cudaFree((cuComplex *)dev_gamma_array));
 //		cudacall(cudaFree((cuComplex *)dev_analytical_solution));
 //		cufftcall(cufftDestroy(plan));
-		cusolverDnDestroy(cusolverH);
+//		cusolverDnDestroy(cusolverH);
 		free((timespec *)h_computation_times);
 //		cublascall(cublasDestroy_v2(handle));
 //		cudacall(cudaFree((float *)dev_actual_residual));
