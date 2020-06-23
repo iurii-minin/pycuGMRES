@@ -19,9 +19,6 @@ void pycuGMRESrmk(
 	char buffer[1024];
 	float tolerance = 0.001f;//0.2f;
 
-	unsigned int rep_st = 0;
-	unsigned int rep_en = 0;
-
 	cuComplex **p_h_gamma_arrays = (cuComplex **) malloc((1) * sizeof(cuComplex *));
 
 
@@ -33,46 +30,36 @@ void pycuGMRESrmk(
 
 
 
-	for (unsigned int repetition_i = rep_st; repetition_i < rep_en + 1; repetition_i ++)
-	{	// int maxiter = 28;
-		fprintf(stderr, "%i\n", N);
+	dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
+	dim3 threads(Q, Q);
 
-		dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
-		dim3 threads(Q, Q);
+	cuComplex *h_gamma_array = p_h_gamma_arrays[0];
 
-		cuComplex *h_gamma_array = p_h_gamma_arrays[0];
+	cudacall(cudaMemcpy(dev_gamma_array, h_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyHostToDevice));
 
-		cudacall(cudaMemcpy(dev_gamma_array, h_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyHostToDevice));
+	cufftcall(cufftExecC2C(plan, (cuComplex *)dev_gamma_array, (cuComplex *)dev_gamma_array, CUFFT_FORWARD));
+	cudacheckSYN();
 
-		cufftcall(cufftExecC2C(plan, (cuComplex *)dev_gamma_array, (cuComplex *)dev_gamma_array, CUFFT_FORWARD));
-		cudacheckSYN();
-
-			pycuInitSolution((cuComplex *)dev_solution, N);
+		pycuInitSolution((cuComplex *)dev_solution, N);
 
 
-			pycuGMRES(	
-						  (bool *)dev_mask,
-						  (cuComplex *)dev_solution,
-						  for_gradient,
-						  h_index_of_max,
-						  maxiter,
-						  tolerance,
-						  (unsigned int *)GMRES_n,
-						  (float *)dev_actual_residual,
-						  (bool *)h_res_vs_tol_p,
-						  N,
-						  (cuComplex *)dev_gamma_array,
-						  plan,
-						  (cublasHandle_t *)handle_p,
-						  (cusolverDnHandle_t *)cusolverH_p,
-						  (devSubsidiary *)dev_subs,
-						  (timespec *)h_computation_times
-				);
-
-
-
-
-	
-	}
+		pycuGMRES(	
+					  (bool *)dev_mask,
+					  (cuComplex *)dev_solution,
+					  for_gradient,
+					  h_index_of_max,
+					  maxiter,
+					  tolerance,
+					  (unsigned int *)GMRES_n,
+					  (float *)dev_actual_residual,
+					  (bool *)h_res_vs_tol_p,
+					  N,
+					  (cuComplex *)dev_gamma_array,
+					  plan,
+					  (cublasHandle_t *)handle_p,
+					  (cusolverDnHandle_t *)cusolverH_p,
+					  (devSubsidiary *)dev_subs,
+					  (timespec *)h_computation_times
+			);
 
 }
