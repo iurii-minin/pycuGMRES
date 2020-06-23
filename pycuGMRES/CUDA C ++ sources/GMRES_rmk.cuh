@@ -17,10 +17,7 @@ void pycuGMRESrmk(
                     timespec *h_computation_times
                )
 {
-//	cufftcall(cufftExecC2C(plan, (cuComplex *)dev_gamma_array, (cuComplex *)dev_gamma_array, CUFFT_FORWARD));
-//	cudacheckSYN();
-
-	pycuInitSolution((cuComplex *)dev_solution, N);
+//	pycuInitSolution((cuComplex *)dev_solution, N);
 
 
 	pycuGMRES(	
