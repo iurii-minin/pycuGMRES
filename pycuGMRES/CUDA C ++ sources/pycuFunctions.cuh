@@ -114,7 +114,7 @@ float pycuRelErr(	cuComplex *dev_solution,
     cublascall( cublasScnrm2(*handle_p, N * N,
                (const cuComplex *)dev_solution, 1, (float  *)&h_result));
 
-    cudacall(cudaMalloc(&dev_C, N * N));
+    cudacall(cudaMalloc(&dev_C, N * N * sizeof(cuComplex)));
 
     A_minus_B_kernel <<< blocks, threads >>> (	(cuComplex *)dev_analytical_solution,
 						(cuComplex *)dev_solution,
