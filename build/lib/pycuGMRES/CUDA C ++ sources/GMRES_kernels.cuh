@@ -258,9 +258,12 @@ __global__ void residual_normalization_kernel(	cuComplex *dev_residual_vec,
 
 __global__ void A_minus_B_kernel(	cuComplex *dev_A,
 					cuComplex *dev_B,
-					cuComplex *dev_C)
+					cuComplex *dev_C,
+					const unsigned int N)
 {
-	unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+	unsigned int i = blockDim.x * blockIdx.x + threadIdx.x;
+	unsigned int j = blockDim.y * blockIdx.y + threadIdx.y;
+	unsigned int index = N * i + j;
 
 	dev_C[index].x = dev_A[index].x - dev_B[index].x;
 	dev_C[index].y = dev_A[index].y - dev_B[index].y;
