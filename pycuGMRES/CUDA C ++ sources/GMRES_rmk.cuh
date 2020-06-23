@@ -106,8 +106,8 @@ void pycuGMRESrmk(
 			cudacall(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
 			cusolvercall(cusolverDnSetStream(cusolverH, stream));
 
-			bool *dev_mask;
-			bool *h_mask = p_h_masks[0];
+//			bool *dev_mask;
+//			bool *h_mask = p_h_masks[0];
 			bool h_res_vs_tol = true;
 			cuComplex *h_gamma_array = p_h_gamma_arrays[0];
 			cuComplex *h_analytical_solution = p_h_anal_sols[0];
@@ -121,7 +121,7 @@ void pycuGMRESrmk(
 			timespec *h_computation_times = (timespec *) malloc(n_timestamps_array[maxiter] * sizeof(timespec));
 			cudacall(cudaSetDevice(0));
 
-			cudacall(cudaMalloc((void**)&dev_mask, N * N * sizeof(bool)));
+//			cudacall(cudaMalloc((void**)&dev_mask, N * N * sizeof(bool)));
 //				cudacall(cudaMalloc((void**)&dev_solution, N * N * sizeof(cuComplex)));
 			cudacall(cudaMalloc((void**)&dev_analytical_solution, N * N * sizeof(cuComplex)));
 
@@ -136,7 +136,7 @@ void pycuGMRESrmk(
 						(float  *)&h_norm_analytical_solution));
 
 
-			cudacall(cudaMemcpy(dev_mask, h_mask, N * N * sizeof(bool), cudaMemcpyHostToDevice));
+//			cudacall(cudaMemcpy(dev_mask, h_mask, N * N * sizeof(bool), cudaMemcpyHostToDevice));
 
 		//	get_gamma_array((cuComplex **)&dev_gamma_array, (cufftHandle)plan);
 		//	cudacall(cudaMemcpy(h_gamma_array, dev_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyDeviceToHost));
@@ -170,8 +170,8 @@ void pycuGMRESrmk(
 				cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_DEVICE);
 				fprintf(stderr, "maxiter = %i\trepetition_i = %i\n", maxiter, repetition_i);
 
-				init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
-				cudacheckSYN();
+//				init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
+//				cudacheckSYN();
 
 				memset(h_computation_times, 0, n_timestamps_array[maxiter] * sizeof(timespec));
 
@@ -245,7 +245,7 @@ void pycuGMRESrmk(
 
 //			saveGPUrealtxt_C(dev_solution, "/output/solution.txt", N * N);
 
-			cudacall(cudaFree((bool *)dev_mask));
+//			cudacall(cudaFree((bool *)dev_mask));
 //				cudacall(cudaFree((cuComplex *)dev_solution));
 			cudacall(cudaFree((cuComplex *)dev_gamma_array));
 			cudacall(cudaFree((cuComplex *)dev_analytical_solution));
