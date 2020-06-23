@@ -1,27 +1,24 @@
-//#include <sstream>
-//#include <unistd.h>
-
-#include <cuda_runtime.h>
-#include <cusolverDn.h>
-#include <string>
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "GMRES_kernels.cuh"
-#include "saveGPU.cuh"
-#include "Fast_matvec.cuh"
-#include "pycuFunctions.cuh"
-#include "GMRES.cuh"
-
-unsigned int *get_n_timestamps_array_improved(unsigned int max_maxiter);
-
-#include "GMRES_rmk.cuh"
-
-void pycuTestGMRES()
+void pycuGMRESrmk(	
+                    bool *dev_mask,
+                    cuComplex *dev_solution,
+										const bool for_gradient,
+										const unsigned int h_index_of_max,
+										unsigned int maxiter,
+										const float tolerance,
+										unsigned int *GMRES_n,
+										float *dev_actual_residual,
+										bool *h_res_vs_tol_p,
+										const unsigned int N,
+                    cuComplex *dev_gamma_array,
+                    const cufftHandle plan,
+                    cublasHandle_t *handle_p,
+                    cusolverDnHandle_t *cusolverH_p,
+                    devSubsidiary *dev_subs,
+                    timespec *h_computation_times
+               )
 {		
 	char buffer[1024];
-	float tolerance = 0.001f;//0.2f;
+	float tolerance_internal = 0.001f;//0.2f;
 
 	unsigned int rep_st = 0;
 	unsigned int rep_en = 0;
@@ -35,7 +32,7 @@ void pycuTestGMRES()
 	unsigned int *n_timestamps_array = get_n_timestamps_array_improved((unsigned int)max_maxiter + 1);
 
 
-	devSubsidiary dev_subs[1];
+	devSubsidiary dev_subs_internal[1];
 
 
 	cuComplex **p_h_anal_sols = (cuComplex **) malloc((pow_en - pow_st + 1) * sizeof(cuComplex *));
@@ -174,7 +171,7 @@ void pycuTestGMRES()
 					cudacall(cudaMalloc((void**)&dev_actual_residual, (maxiter + 1) * sizeof(float)));
 
 					const char *allocation_result = pycuGetSubsidiary(
-								(devSubsidiary *)dev_subs, 
+								(devSubsidiary *)dev_subs_internal, 
 								N, 
 								maxiter);
 
@@ -189,27 +186,14 @@ void pycuTestGMRES()
 					memset(h_computation_times, 0, n_timestamps_array[maxiter] * sizeof(timespec));
 
 					clock_time = clock();
-/*
-					Fast_GMRES_with_CUDA(	(const cuComplex *)dev_gamma_array,
-								(const bool *)dev_mask,
-								(cuComplex *)dev_solution,
-								(float **)&dev_actual_residual,
-								(unsigned int *)&GMRES_n,
-								(cufftHandle)plan,
-								(cublasHandle_t *)&handle,
-								tolerance, false, 0,
-								(bool *)&h_res_vs_tol,
- 								maxiter,
-								(cusolverDnHandle_t)cusolverH,
-								(timespec *)h_computation_times, N);
-
-*/					pycuGMRES(	
+ 
+					pycuGMRES(	
 							    (bool *)dev_mask,
 							    (cuComplex *)dev_solution,
 							    false,
 							    0,
 							    maxiter,
-							    tolerance,
+							    tolerance_internal,
 							    (unsigned int *)&GMRES_n,
 							    (float *)dev_actual_residual,
 							    (bool *)&h_res_vs_tol,
@@ -224,7 +208,7 @@ void pycuTestGMRES()
 
 					diff_time = (float)(clock() - clock_time) / (float)(CLOCKS_PER_SEC);
 
-					pycuDestroySubsidiary((devSubsidiary *)dev_subs);
+					pycuDestroySubsidiary((devSubsidiary *)dev_subs_internal);
 				}
 
 				{
@@ -285,81 +269,4 @@ void pycuTestGMRES()
 	}
 
 	free(n_timestamps_array);
-}
-
-
-unsigned int get_n_timestamps_val_improved(unsigned int maxiter) //Comparables/new
-{
-    unsigned int n_timestamps  = 1; //short_indexed_text_array = []
-    n_timestamps ++; //short_indexed_text_array.append("Initialization (malloc)") #_1_ !_
-    n_timestamps ++; //short_indexed_text_array.append("G_x_fft_matvec for A*x0") #_2_ !_
-    n_timestamps ++; //short_indexed_text_array.append("2D_to_1D for A*x0-x0") #_3_
-    n_timestamps ++; //short_indexed_text_array.append("Norm(residual_vec)") #_4_
-    n_timestamps ++; //short_indexed_text_array.append("Condition to iterate") #_5_ !_
-    n_timestamps ++; //short_indexed_text_array.append("Residual_normalization & set_a,b") #_6_
-    
-    unsigned int GMRES_i = 1;
-    
-    if (1)
-    {
-        n_timestamps ++; //short_indexed_text_array.append("Memset(H, 0)") #_7_ !_
-        n_timestamps ++; //short_indexed_text_array.append("G_x_fft_matvec for w=A*v iteration(" + str(GMRES_i) + ")") #_8_
-        n_timestamps ++; //short_indexed_text_array.append("2D_to_1D for w=A*v iteration(" + str(GMRES_i) + ")") #_9_
-        n_timestamps ++; //short_indexed_text_array.append("H_jk = (V_j, w) iteration(" + str(GMRES_i) + ")") #_10_
-        n_timestamps ++; //short_indexed_text_array.append("w = w - H*v iteration(" + str(GMRES_i) + ")") #_11_ !_    
-        n_timestamps ++; //short_indexed_text_array.append("H_jj+1 = norm(w) iteration(" + str(GMRES_i) + ")") #_12_    
-        n_timestamps ++; //short_indexed_text_array.append("1/H_jj+1 iteration(" + str(GMRES_i) + ")") #_13_    
-        n_timestamps ++; //short_indexed_text_array.append("w = w/H_jj+1 iteration(" + str(GMRES_i) + ")") #_14_
-        n_timestamps ++; //short_indexed_text_array.append("Set(J) iteration(" + str(GMRES_i) + ")") #_15_ !_
-        n_timestamps ++; //short_indexed_text_array.append("Set(Jtotal) iteration(" + str(GMRES_i) + ")") #_16_ !_
-        n_timestamps ++; //short_indexed_text_array.append("Update residual iteration(" + str(GMRES_i) + ")") #_17_ !_
-        
-        for (GMRES_i = 1; GMRES_i < maxiter; GMRES_i ++)
-        {  
-            n_timestamps ++; //short_indexed_text_array.append("Condition_check iteration(" + str(GMRES_i) + ")") #_18_
-            n_timestamps ++; //short_indexed_text_array.append("G_x_fft_matvec for w=A*v iteration(" + str(GMRES_i) + ")") #_19_        
-            n_timestamps ++; //short_indexed_text_array.append("2D_to_1D for w=A*v iteration(" + str(GMRES_i) + ")") #_20_     
-                
-            for (unsigned int j = 0; j < GMRES_i + 1; j ++)
-            {
-                n_timestamps ++; //short_indexed_text_array.append("H_jk = (V_j, w) iteration(" + str(GMRES_i) + ", j = " + str(j) + ")") #_21_
-                n_timestamps ++; //short_indexed_text_array.append("w = w - H_jk * V_j iteration(" + str(GMRES_i) + ", j = " + str(j) + ")") #_22_  
-            }       
-                
-            n_timestamps ++; //short_indexed_text_array.append("H_jj+1 = norm(w) iteration(" + str(GMRES_i) + ")") #_23_
-            n_timestamps ++; //short_indexed_text_array.append("1/H_jj+1 iteration(" + str(GMRES_i) + ")") #_24_
-            n_timestamps ++; //short_indexed_text_array.append("w = w/H_jj+1 iteration(" + str(GMRES_i) + ")") #_25_    
-            n_timestamps ++; //short_indexed_text_array.append("H_temp=Jtotal * H iteration(" + str(GMRES_i) + ")") #_26_
-            n_timestamps ++; //short_indexed_text_array.append("Set(J) iteration(" + str(GMRES_i) + ")") #_27_ !_
-            n_timestamps ++; //short_indexed_text_array.append("Jtotal = J*Jtotal iteration(" + str(GMRES_i) + ")") #_28_
-            n_timestamps ++; //short_indexed_text_array.append("Update residual iteration(" + str(GMRES_i) + ")") #_29_ !_
-        }
-    }
-            
-    n_timestamps ++; //short_indexed_text_array.append("HH = Jtotal * H") #_30_
-    n_timestamps ++; //short_indexed_text_array.append("cc <- Jtotal") #_31_
-    n_timestamps ++; //short_indexed_text_array.append("Initialize_small_LES(HH, cc)") #_32_
-    n_timestamps ++; //short_indexed_text_array.append("Process_small_LES(HH, cc)") #_33_
-    
-    for (unsigned int j = 0; j < GMRES_i; j++)
-    {        
-        n_timestamps ++; //short_indexed_text_array.append("Add iteration(j = " + str(j) + ")") #_34_
-    }
-        
-    n_timestamps ++; //short_indexed_text_array.append("set(Output_p)") #_35_        
-    n_timestamps ++; //short_indexed_text_array.append("Free in postprocessing") #_36_
-    
-    return n_timestamps;
-}
-
-
-unsigned int *get_n_timestamps_array_improved(unsigned int max_maxiter)
-{
-    unsigned int *n_timestamps_array = (unsigned int *)malloc(max_maxiter * sizeof(unsigned int));
-
-    for (unsigned int maxiter = 0; maxiter < max_maxiter; maxiter ++)
-    {
-        n_timestamps_array[maxiter] = get_n_timestamps_val_improved((unsigned int)maxiter);
-    }
-    return n_timestamps_array;
 }

@@ -297,7 +297,24 @@ pycuGMRES.argtypes = [
                       POINTER(c_longlong),       # cusolverDnHandle_t *cusolverH_p
                       POINTER(c_devSubsidiary),  # dev_subsidiary *dev_subs
                       POINTER(c_timespec)        # timespec *computation_times
-              #        c_void_p,       		 # void *devh_debug1
-              #        c_void_p,       		 # void *devh_debug2
-              #        c_void_p        		 # void *devh_debug3
+                                           ]
+
+pycuGMRESrmk = get_function('pycuGMRESrmk', path_to_so)
+pycuGMRESrmk.argtypes = [
+                      POINTER(c_bool),           # bool *dev_mask
+                      POINTER(c_complex),        # cuComplex *dev_solution
+                      c_bool,                    # const bool for_gradient
+                      c_uint,                    # const unsigned int h_index_of_max
+                      c_uint,                    # unsigned int maxiter
+                      c_float,                   # const float tolerance
+                      POINTER(c_uint),           # unsigned int *GMRES_n
+                      POINTER(c_float),          # float *dev_actual_residual
+                      POINTER(c_bool),           # bool *h_res_vs_tol_p
+                      c_uint,                    # const unsigned int N
+                      POINTER(c_complex),        # cuComplex *dev_gamma_array
+                      c_uint,                    # const cufftHandle plan
+                      POINTER(c_longlong),       # cublasHandle_t *handle_p
+                      POINTER(c_longlong),       # cusolverDnHandle_t *cusolverH_p
+                      POINTER(c_devSubsidiary),  # dev_subsidiary *dev_subs
+                      POINTER(c_timespec)        # timespec *computation_times
                                            ]

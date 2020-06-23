@@ -16,6 +16,8 @@
 
 unsigned int *get_n_timestamps_array_improved(unsigned int max_maxiter);
 
+#include "GMRES_rmk.cuh"
+
 void pycuTestGMRES()
 {		
 	char buffer[1024];
