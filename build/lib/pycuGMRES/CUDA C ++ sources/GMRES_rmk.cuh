@@ -186,7 +186,7 @@ void pycuGMRESrmk(
 						  (cuComplex *)dev_gamma_array,
 						  plan,
 						  (cublasHandle_t *)handle_p,
-						  (cusolverDnHandle_t *)&cusolverH_p,
+						  (cusolverDnHandle_t *)cusolverH_p,
 						  (devSubsidiary *)dev_subs,
 						  (timespec *)h_computation_times
 				);
