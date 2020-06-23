@@ -22,14 +22,14 @@ void pycuGMRESrmk(
 	dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
 	dim3 threads(Q, Q);
 
-	cuComplex *h_gamma_array = (cuComplex *)malloc((2 * N - 1) * (2 * N - 1) * sizeof(cuComplex));
+//	cuComplex *h_gamma_array = (cuComplex *)malloc((2 * N - 1) * (2 * N - 1) * sizeof(cuComplex));
 
-	sprintf(buffer, "/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Input/G_prep_%u.txt", N);
-	get_array_C_to_CPU((cuComplex *)h_gamma_array, (const char *)buffer);
+//	sprintf(buffer, "/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Input/G_prep_%u.txt", N);
+//	get_array_C_to_CPU((cuComplex *)h_gamma_array, (const char *)buffer);
 
 
 
-	cudacall(cudaMemcpy(dev_gamma_array, h_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyHostToDevice));
+//	cudacall(cudaMemcpy(dev_gamma_array, h_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyHostToDevice));
 
 	cufftcall(cufftExecC2C(plan, (cuComplex *)dev_gamma_array, (cuComplex *)dev_gamma_array, CUFFT_FORWARD));
 	cudacheckSYN();
@@ -56,6 +56,6 @@ void pycuGMRESrmk(
 				  (timespec *)h_computation_times
 		);
 
-	free(h_gamma_array);
+//	free(h_gamma_array);
 
 }
