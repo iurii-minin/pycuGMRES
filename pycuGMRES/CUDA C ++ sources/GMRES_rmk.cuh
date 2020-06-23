@@ -105,7 +105,7 @@ void pycuGMRESrmk(
 		bool h_res_vs_tol = true;
 		cuComplex *h_gamma_array = p_h_gamma_arrays[0];
 		cuComplex *h_analytical_solution = p_h_anal_sols[0];
-		cuComplex *dev_gamma_array;
+//		cuComplex *dev_gamma_array;
 		cuComplex *dev_analytical_solution;
 //				cuComplex *dev_solution;
 		float *dev_actual_residual;
@@ -135,7 +135,7 @@ void pycuGMRESrmk(
 	//	get_gamma_array((cuComplex **)&dev_gamma_array, (cufftHandle)plan);
 	//	cudacall(cudaMemcpy(h_gamma_array, dev_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyDeviceToHost));
 	//==================================== Begin: get_gamma_array connected to MKL 2D Green's function values in Bessel function =========================
-		cudacall(cudaMalloc((void**)&dev_gamma_array,  (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex)));
+//		cudacall(cudaMalloc((void**)&dev_gamma_array,  (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex)));
 		cudacall(cudaMemcpy(dev_gamma_array, h_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyHostToDevice));
 
 		cufftcall(cufftExecC2C(plan, (cuComplex *)dev_gamma_array, (cuComplex *)dev_gamma_array, CUFFT_FORWARD));
@@ -242,7 +242,7 @@ void pycuGMRESrmk(
 
 //			cudacall(cudaFree((bool *)dev_mask));
 //				cudacall(cudaFree((cuComplex *)dev_solution));
-		cudacall(cudaFree((cuComplex *)dev_gamma_array));
+//		cudacall(cudaFree((cuComplex *)dev_gamma_array));
 		cudacall(cudaFree((cuComplex *)dev_analytical_solution));
 		cufftcall(cufftDestroy(plan));
 		cusolverDnDestroy(cusolverH);
