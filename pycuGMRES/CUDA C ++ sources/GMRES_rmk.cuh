@@ -22,7 +22,7 @@ void pycuGMRESrmk(
 	unsigned int rep_st = 0;
 	unsigned int rep_en = 0;
 
-	unsigned int *n_timestamps_array = get_n_timestamps_array_improved((unsigned int)maxiter + 1);
+//	unsigned int *n_timestamps_array = get_n_timestamps_array_improved((unsigned int)maxiter + 1);
 
 
 //	devSubsidiary dev_subs_internal[1];
@@ -112,7 +112,7 @@ void pycuGMRESrmk(
 //				float h_result = 0.f;
 //		float h_norm_analytical_solution = 0.f;
 //		unsigned int GMRES_n = 0;
-		timespec *h_computation_times = (timespec *) malloc(n_timestamps_array[maxiter] * sizeof(timespec));
+//		timespec *h_computation_times = (timespec *) malloc(n_timestamps_array[maxiter] * sizeof(timespec));
 //		cudacall(cudaSetDevice(0));
 
 //			cudacall(cudaMalloc((void**)&dev_mask, N * N * sizeof(bool)));
@@ -168,7 +168,7 @@ void pycuGMRESrmk(
 //			cudacheckSYN();
 			pycuInitSolution((cuComplex *)dev_solution, N);
 
-			memset(h_computation_times, 0, n_timestamps_array[maxiter] * sizeof(timespec));
+//			memset(h_computation_times, 0, n_timestamps_array[maxiter] * sizeof(timespec));
 
 //			clock_time = clock();
 
@@ -246,10 +246,10 @@ void pycuGMRESrmk(
 //		cudacall(cudaFree((cuComplex *)dev_analytical_solution));
 //		cufftcall(cufftDestroy(plan));
 //		cusolverDnDestroy(cusolverH);
-		free((timespec *)h_computation_times);
+//		free((timespec *)h_computation_times);
 //		cublascall(cublasDestroy_v2(handle));
 //		cudacall(cudaFree((float *)dev_actual_residual));
 	}
 
-	free(n_timestamps_array);
+//	free(n_timestamps_array);
 }
