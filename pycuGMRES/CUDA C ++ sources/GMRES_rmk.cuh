@@ -33,7 +33,7 @@ void pycuGMRESrmk(
 
 
 	cuComplex **p_h_anal_sols = (cuComplex **) malloc((1) * sizeof(cuComplex *));
-	bool **p_h_masks = (bool **) malloc((1) * sizeof(bool *));
+//	bool **p_h_masks = (bool **) malloc((1) * sizeof(bool *));
 	cuComplex **p_h_gamma_arrays = (cuComplex **) malloc((1) * sizeof(cuComplex *));
 
 	p_h_anal_sols[0] = (cuComplex *) malloc( N * N * sizeof(cuComplex) );
@@ -61,7 +61,7 @@ void pycuGMRESrmk(
 		exit(1);
 	}
 
-
+/*
 	p_h_masks[0] = (bool *) malloc(N * N * sizeof(bool));
 
 	sprintf(buffer, "/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Input/cylinder_%u.txt", N);
@@ -79,7 +79,7 @@ void pycuGMRESrmk(
 		fprintf(stderr, "Unable to open file: %s\n", buffer);
 		exit(1);
 	}
-
+*/
 
 	p_h_gamma_arrays[0] = (cuComplex *)malloc((2 * N - 1) * (2 * N - 1) * sizeof(cuComplex));
 
