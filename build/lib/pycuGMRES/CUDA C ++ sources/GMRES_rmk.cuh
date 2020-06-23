@@ -123,7 +123,7 @@ void pycuGMRESrmk(
 				cuComplex *h_analytical_solution = p_h_anal_sols[pow_cur - pow_st];
 				cuComplex *dev_gamma_array;
 				cuComplex *dev_analytical_solution;
-				cuComplex *dev_solution;
+//				cuComplex *dev_solution;
 				float *dev_actual_residual;
 				float h_result = 0.f;
 				float h_norm_analytical_solution = 0.f;
@@ -132,7 +132,7 @@ void pycuGMRESrmk(
 				cudacall(cudaSetDevice(0));
 
 				cudacall(cudaMalloc((void**)&dev_mask, N * N * sizeof(bool)));
-				cudacall(cudaMalloc((void**)&dev_solution, N * N * sizeof(cuComplex)));
+//				cudacall(cudaMalloc((void**)&dev_solution, N * N * sizeof(cuComplex)));
 				cudacall(cudaMalloc((void**)&dev_analytical_solution, N * N * sizeof(cuComplex)));
 
 
@@ -256,7 +256,7 @@ void pycuGMRESrmk(
 	//			saveGPUrealtxt_C(dev_solution, "/output/solution.txt", N * N);
 
 				cudacall(cudaFree((bool *)dev_mask));
-				cudacall(cudaFree((cuComplex *)dev_solution));
+//				cudacall(cudaFree((cuComplex *)dev_solution));
 				cudacall(cudaFree((cuComplex *)dev_gamma_array));
 				cudacall(cudaFree((cuComplex *)dev_analytical_solution));
 				cufftcall(cufftDestroy(plan));
