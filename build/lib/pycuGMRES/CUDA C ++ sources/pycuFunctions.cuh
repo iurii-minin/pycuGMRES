@@ -138,7 +138,7 @@ float pycuRelErr(cuComplex *dev_solution, cuComplex *dev_analytical_solution, un
 //extern "C" {
 void *pycumalloc(unsigned int amount, size_t unit_size)
 {
-         bool *dev_array;
+         void *dev_array;
          unsigned int size = amount * unit_size;
          cudacall(cudaMalloc(&dev_array, size));
          return dev_array;
