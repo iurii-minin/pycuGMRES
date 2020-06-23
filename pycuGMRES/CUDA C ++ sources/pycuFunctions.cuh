@@ -119,7 +119,7 @@ float pycuRelErr(	cuComplex *dev_solution,
     A_minus_B_kernel <<< blocks, threads >>> (	(cuComplex *)dev_analytical_solution,
 						(cuComplex *)dev_solution,
 						(cuComplex *)dev_C);
-    cudacheckSYN();;
+    cudacheckSYN();
 
 
     cublascall(cublasScnrm2(	*handle_p, 
@@ -129,7 +129,12 @@ float pycuRelErr(	cuComplex *dev_solution,
 
     cudacall(cudaFree(dev_C));
 
-    h_result = h_result / h_norm_analytical_solution;    
+    fprintf(stderr, "h_norm_solution = %f\n", h_result);
+
+    h_result = h_result / h_norm_analytical_solution;
+
+    fprintf(stderr, "h_result = %f\n", h_result);
+    fprintf(stderr, "h_norm_analytical_solution = %f\n", h_norm_analytical_solution);
 
     return h_result;
 }
