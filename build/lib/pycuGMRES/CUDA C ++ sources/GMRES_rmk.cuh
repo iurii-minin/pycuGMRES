@@ -4,7 +4,6 @@ void pycuGMRESrmk(
 										const bool for_gradient,
 										const unsigned int h_index_of_max,
 										unsigned int maxiter,
-										const float tolerance,
 										unsigned int *GMRES_n,
 										float *dev_actual_residual,
 										bool *h_res_vs_tol_p,
@@ -18,15 +17,12 @@ void pycuGMRESrmk(
                )
 {		
 	char buffer[1024];
-	float tolerance_internal = 0.001f;//0.2f;
+	float tolerance = 0.001f;//0.2f;
 
 	unsigned int rep_st = 0;
 	unsigned int rep_en = 0;
 
-	unsigned int min_maxiter = 30;
-	unsigned int max_maxiter = 30;
-
-	unsigned int *n_timestamps_array = get_n_timestamps_array_improved((unsigned int)max_maxiter + 1);
+	unsigned int *n_timestamps_array = get_n_timestamps_array_improved((unsigned int)maxiter + 1);
 
 
 	devSubsidiary dev_subs_internal[1];
@@ -90,130 +86,128 @@ void pycuGMRESrmk(
 
 	for (unsigned int repetition_i = rep_st; repetition_i < rep_en + 1; repetition_i ++)
 	{	// int maxiter = 28;
-		for (unsigned int maxiter = min_maxiter; maxiter < max_maxiter + 1; maxiter ++)
-		{
-			fprintf(stderr, "%i\n", N);
+		fprintf(stderr, "%i\n", N);
 
-			dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
-			dim3 threads(Q, Q);
-			cufftHandle plan;
-			cublasHandle_t handle;
-			cublascall(cublasCreate_v2(&handle));
-			cufftcall(cufftPlan2d(&plan, 2 * N - 1, 2 * N - 1, CUFFT_C2C));
-			cudaStream_t stream = NULL;
-			cusolverDnHandle_t cusolverH = NULL;
-			cusolvercall(cusolverDnCreate(&cusolverH));
-			cudacall(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
-			cusolvercall(cusolverDnSetStream(cusolverH, stream));
+		dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
+		dim3 threads(Q, Q);
+		cufftHandle plan;
+		cublasHandle_t handle;
+		cublascall(cublasCreate_v2(&handle));
+		cufftcall(cufftPlan2d(&plan, 2 * N - 1, 2 * N - 1, CUFFT_C2C));
+		cudaStream_t stream = NULL;
+		cusolverDnHandle_t cusolverH = NULL;
+		cusolvercall(cusolverDnCreate(&cusolverH));
+		cudacall(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
+		cusolvercall(cusolverDnSetStream(cusolverH, stream));
 
 //			bool *dev_mask;
 //			bool *h_mask = p_h_masks[0];
-			bool h_res_vs_tol = true;
-			cuComplex *h_gamma_array = p_h_gamma_arrays[0];
-			cuComplex *h_analytical_solution = p_h_anal_sols[0];
-			cuComplex *dev_gamma_array;
-			cuComplex *dev_analytical_solution;
+		bool h_res_vs_tol = true;
+		cuComplex *h_gamma_array = p_h_gamma_arrays[0];
+		cuComplex *h_analytical_solution = p_h_anal_sols[0];
+		cuComplex *dev_gamma_array;
+		cuComplex *dev_analytical_solution;
 //				cuComplex *dev_solution;
-			float *dev_actual_residual;
+		float *dev_actual_residual;
 //				float h_result = 0.f;
-			float h_norm_analytical_solution = 0.f;
-			unsigned int GMRES_n = 0;
-			timespec *h_computation_times = (timespec *) malloc(n_timestamps_array[maxiter] * sizeof(timespec));
-			cudacall(cudaSetDevice(0));
+		float h_norm_analytical_solution = 0.f;
+		unsigned int GMRES_n = 0;
+		timespec *h_computation_times = (timespec *) malloc(n_timestamps_array[maxiter] * sizeof(timespec));
+		cudacall(cudaSetDevice(0));
 
 //			cudacall(cudaMalloc((void**)&dev_mask, N * N * sizeof(bool)));
 //				cudacall(cudaMalloc((void**)&dev_solution, N * N * sizeof(cuComplex)));
-			cudacall(cudaMalloc((void**)&dev_analytical_solution, N * N * sizeof(cuComplex)));
+		cudacall(cudaMalloc((void**)&dev_analytical_solution, N * N * sizeof(cuComplex)));
 
 
 
 
-			cudacall(cudaMemcpy(dev_analytical_solution, h_analytical_solution, N * N * sizeof(cuComplex), cudaMemcpyHostToDevice));
+		cudacall(cudaMemcpy(dev_analytical_solution, h_analytical_solution, N * N * sizeof(cuComplex), cudaMemcpyHostToDevice));
 
 
-			cublascall(cublasScnrm2(handle, N * N,
-						(const cuComplex *)dev_analytical_solution, 1, 
-						(float  *)&h_norm_analytical_solution));
+		cublascall(cublasScnrm2(handle, N * N,
+					(const cuComplex *)dev_analytical_solution, 1, 
+					(float  *)&h_norm_analytical_solution));
 
 
 //			cudacall(cudaMemcpy(dev_mask, h_mask, N * N * sizeof(bool), cudaMemcpyHostToDevice));
 
-		//	get_gamma_array((cuComplex **)&dev_gamma_array, (cufftHandle)plan);
-		//	cudacall(cudaMemcpy(h_gamma_array, dev_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyDeviceToHost));
-		//==================================== Begin: get_gamma_array connected to MKL 2D Green's function values in Bessel function =========================
-			cudacall(cudaMalloc((void**)&dev_gamma_array,  (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex)));
-			cudacall(cudaMemcpy(dev_gamma_array, h_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyHostToDevice));
+	//	get_gamma_array((cuComplex **)&dev_gamma_array, (cufftHandle)plan);
+	//	cudacall(cudaMemcpy(h_gamma_array, dev_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyDeviceToHost));
+	//==================================== Begin: get_gamma_array connected to MKL 2D Green's function values in Bessel function =========================
+		cudacall(cudaMalloc((void**)&dev_gamma_array,  (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex)));
+		cudacall(cudaMemcpy(dev_gamma_array, h_gamma_array, (2 * N - 1) * (2 * N - 1) * sizeof(cuComplex), cudaMemcpyHostToDevice));
 
-			cufftcall(cufftExecC2C(plan, (cuComplex *)dev_gamma_array, (cuComplex *)dev_gamma_array, CUFFT_FORWARD));
-			cudacheckSYN();
-		//==================================== End: get_gamma_array connected to MKL 2D Green's function values in Bessel function =========================
+		cufftcall(cufftExecC2C(plan, (cuComplex *)dev_gamma_array, (cuComplex *)dev_gamma_array, CUFFT_FORWARD));
+		cudacheckSYN();
+	//==================================== End: get_gamma_array connected to MKL 2D Green's function values in Bessel function =========================
 
-			time_t clock_time;
-			float diff_time = 0.f;
-			float diff_average = 0.f;
+		time_t clock_time;
+		float diff_time = 0.f;
+		float diff_average = 0.f;
 //				cuComplex alpha;
 //				alpha.x = -1.f;
 //				alpha.y = 0.f;
 //				const cuComplex *p_alpha = &alpha;
 
-			{
+		{
 
-				cudacall(cudaMalloc((void**)&dev_actual_residual, (maxiter + 1) * sizeof(float)));
+			cudacall(cudaMalloc((void**)&dev_actual_residual, (maxiter + 1) * sizeof(float)));
 
-				const char *allocation_result = pycuGetSubsidiary(
-							(devSubsidiary *)dev_subs_internal, 
-							N, 
-							maxiter);
+			const char *allocation_result = pycuGetSubsidiary(
+						(devSubsidiary *)dev_subs_internal, 
+						N, 
+						maxiter);
 
-				fprintf(stderr, "Allocation memory: %s\n", allocation_result);
+			fprintf(stderr, "Allocation memory: %s\n", allocation_result);
 
-				cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_DEVICE);
-				fprintf(stderr, "maxiter = %i\trepetition_i = %i\n", maxiter, repetition_i);
+			cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_DEVICE);
+			fprintf(stderr, "maxiter = %i\trepetition_i = %i\n", maxiter, repetition_i);
 
 //				init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
 //				cudacheckSYN();
 
-				memset(h_computation_times, 0, n_timestamps_array[maxiter] * sizeof(timespec));
+			memset(h_computation_times, 0, n_timestamps_array[maxiter] * sizeof(timespec));
 
-				clock_time = clock();
+			clock_time = clock();
 
-				pycuGMRES(	
-						    (bool *)dev_mask,
-						    (cuComplex *)dev_solution,
-						    false,
-						    0,
-						    maxiter,
-						    tolerance_internal,
-						    (unsigned int *)&GMRES_n,
-						    (float *)dev_actual_residual,
-						    (bool *)&h_res_vs_tol,
-						    N,
-						    (cuComplex *)dev_gamma_array,
-						    plan,
-						    (cublasHandle_t *)&handle,
-						    (cusolverDnHandle_t *)&cusolverH,
-						    (devSubsidiary *)dev_subs,
-						    (timespec *)h_computation_times
-					);
+			pycuGMRES(	
+						  (bool *)dev_mask,
+						  (cuComplex *)dev_solution,
+						  for_gradient,
+						  h_index_of_max,
+						  maxiter,
+						  tolerance,
+						  (unsigned int *)&GMRES_n,
+						  (float *)dev_actual_residual,
+						  (bool *)&h_res_vs_tol,
+						  N,
+						  (cuComplex *)dev_gamma_array,
+						  plan,
+						  (cublasHandle_t *)&handle,
+						  (cusolverDnHandle_t *)&cusolverH,
+						  (devSubsidiary *)dev_subs,
+						  (timespec *)h_computation_times
+				);
 
-				diff_time = (float)(clock() - clock_time) / (float)(CLOCKS_PER_SEC);
+			diff_time = (float)(clock() - clock_time) / (float)(CLOCKS_PER_SEC);
 
-				pycuDestroySubsidiary((devSubsidiary *)dev_subs_internal);
-			}
+			pycuDestroySubsidiary((devSubsidiary *)dev_subs_internal);
+		}
 
-			{
-				fprintf(stderr, "Files writing\n");
-	
-				sprintf(buffer, "time_%u/solution_sample", N);
-				save_test_GPU((char *)buffer, (cuComplex *)dev_solution, maxiter * 100 + repetition_i, N * N);
-				fprintf(stderr, "diff_time = %f\n", diff_time);
+		{
+			fprintf(stderr, "Files writing\n");
 
-				sprintf(buffer, "time_%u/maxiter", N);
-				save_test_F_CPU((char *)buffer, (float *)&diff_time, maxiter * 100 + repetition_i, 1);
-				sprintf(buffer, "time_%u/residual", N);
-				save_test_F_GPU((char *)buffer, (float *)dev_actual_residual + GMRES_n, maxiter * 100 + repetition_i, 1);
-				sprintf(buffer, "time_%u/times", N);
-				save_test_timespec_CPU((char *)buffer, (timespec *)h_computation_times, maxiter * 100 + repetition_i, n_timestamps_array[maxiter]);
+			sprintf(buffer, "time_%u/solution_sample", N);
+			save_test_GPU((char *)buffer, (cuComplex *)dev_solution, maxiter * 100 + repetition_i, N * N);
+			fprintf(stderr, "diff_time = %f\n", diff_time);
+
+			sprintf(buffer, "time_%u/maxiter", N);
+			save_test_F_CPU((char *)buffer, (float *)&diff_time, maxiter * 100 + repetition_i, 1);
+			sprintf(buffer, "time_%u/residual", N);
+			save_test_F_GPU((char *)buffer, (float *)dev_actual_residual + GMRES_n, maxiter * 100 + repetition_i, 1);
+			sprintf(buffer, "time_%u/times", N);
+			save_test_timespec_CPU((char *)buffer, (timespec *)h_computation_times, maxiter * 100 + repetition_i, n_timestamps_array[maxiter]);
 
 //					cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_HOST);
 
@@ -239,22 +233,21 @@ void pycuGMRESrmk(
 //					fprintf(stderr, "File relative_error writing\t%f\n", h_result);
 //					sprintf(buffer, "time_%u/relative_error", N);
 //					save_test_F_CPU((char *)buffer, (float *)&h_result, maxiter * 100 + repetition_i, 1);
-			}
+		}
 
-			fprintf(stderr, "diff = %f\n", diff_average);
+		fprintf(stderr, "diff = %f\n", diff_average);
 
 //			saveGPUrealtxt_C(dev_solution, "/output/solution.txt", N * N);
 
 //			cudacall(cudaFree((bool *)dev_mask));
 //				cudacall(cudaFree((cuComplex *)dev_solution));
-			cudacall(cudaFree((cuComplex *)dev_gamma_array));
-			cudacall(cudaFree((cuComplex *)dev_analytical_solution));
-			cufftcall(cufftDestroy(plan));
-			cusolverDnDestroy(cusolverH);
-			free((timespec *)h_computation_times);
-			cublascall(cublasDestroy_v2(handle));
-			cudacall(cudaFree((float *)dev_actual_residual));
-		}
+		cudacall(cudaFree((cuComplex *)dev_gamma_array));
+		cudacall(cudaFree((cuComplex *)dev_analytical_solution));
+		cufftcall(cufftDestroy(plan));
+		cusolverDnDestroy(cusolverH);
+		free((timespec *)h_computation_times);
+		cublascall(cublasDestroy_v2(handle));
+		cudacall(cudaFree((float *)dev_actual_residual));
 	}
 
 	free(n_timestamps_array);
