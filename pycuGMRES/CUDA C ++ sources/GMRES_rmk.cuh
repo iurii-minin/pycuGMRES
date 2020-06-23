@@ -132,7 +132,7 @@ void pycuGMRESrmk(
 				cudacall(cudaSetDevice(0));
 
 				cudacall(cudaMalloc((void**)&dev_mask, N * N * sizeof(bool)));
-				cudacall(cudaMalloc((void**)&dev_solution, N * N * sizeof(cuComplex)));
+//				cudacall(cudaMalloc((void**)&dev_solution, N * N * sizeof(cuComplex)));
 				cudacall(cudaMalloc((void**)&dev_analytical_solution, N * N * sizeof(cuComplex)));
 
 
