@@ -105,9 +105,6 @@ float pycuRelErr(	cuComplex *dev_solution,
     dim3 threads(Q, Q);
     float h_result = 0.f;
     float h_norm_analytical_solution = 0.f;
-    cuComplex alpha;
-    alpha.x = -1.f;
-    alpha.y = 0.f;
     cuComplex *dev_C;
 
     cudacall(cudaMalloc(&dev_C, N * N * sizeof(cuComplex)));
@@ -120,15 +117,12 @@ float pycuRelErr(	cuComplex *dev_solution,
                (const cuComplex *)dev_solution, 1, (float  *)&h_result));
 
     fprintf(stderr, "Norm of solution:\t%f\n", h_result);
-
-    cublasCcopy(	   *handle_p, N * N,
-                           (const cuComplex       *)dev_solution, 1,
-                           (cuComplex             *)dev_C, 1);
-
-    cublascall( cublasCaxpy(*handle_p, N * N,
-               (const cuComplex *)&alpha,
-               (const cuComplex *)dev_analytical_solution, 1,
-               (cuComplex *)dev_C, 1));
+    
+    A_minus_B_kernel <<< blocks, threads >>> (	(cuComplex *)dev_analytical_solution,
+						(cuComplex *)dev_solution,
+						(cuComplex *)dev_C,
+						N);
+    cudacheckSYN();
 
 
     cublascall(cublasScnrm2(*handle_p, N * N,
