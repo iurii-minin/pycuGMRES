@@ -105,7 +105,12 @@ float pycuRelErr(	cuComplex *dev_solution,
     dim3 threads(Q, Q);
     float h_result = 0.f;
     float h_norm_analytical_solution = 0.f;
+    cuComplex alpha;
+    alpha.x = -1.f;
+    alpha.y = 0.f;
     cuComplex *dev_C;
+
+    cudacall(cudaMalloc(&dev_C, N * N * sizeof(cuComplex)));
 
     cublascall(cublasScnrm2(*handle_p, N * N,
                 (const cuComplex *)dev_analytical_solution, 1, 
@@ -114,28 +119,28 @@ float pycuRelErr(	cuComplex *dev_solution,
     cublascall( cublasScnrm2(*handle_p, N * N,
                (const cuComplex *)dev_solution, 1, (float  *)&h_result));
 
-    cudacall(cudaMalloc(&dev_C, N * N * sizeof(cuComplex)));
+    fprintf(stderr, "Norm of solution:\t%f\n", h_result);
 
-    A_minus_B_kernel <<< blocks, threads >>> (	(cuComplex *)dev_solution,
-						(cuComplex *)dev_analytical_solution,
-						(cuComplex *)dev_C,
-						N);
-    cudacheckSYN();
+    cublasCcopy(	   *handle_p, N * N,
+                           (const cuComplex       *)dev_solution, 1,
+                           (cuComplex             *)dev_C, 1);
+
+    cublascall( cublasCaxpy(*handle_p, N * N,
+               (const cuComplex *)&alpha,
+               (const cuComplex *)dev_analytical_solution, 1,
+               (cuComplex *)dev_C, 1));
 
 
-    cublascall(cublasScnrm2(	*handle_p, 
-				N * N,
-	                        (const cuComplex *)dev_C, 1, 
-				(float  *)&h_result));
+    cublascall(cublasScnrm2(*handle_p, N * N,
+                        (const cuComplex *)dev_solution, 1, (float  *)&h_result));
 
-    cudacall(cudaFree(dev_C));
-
-    fprintf(stderr, "h_norm_solution = %f\n", h_result);
+//    fprintf(stderr, "Norm of diff:\t%f\n", h_result);
 
     h_result = h_result / h_norm_analytical_solution;
 
-    fprintf(stderr, "h_result = %f\n", h_result);
-    fprintf(stderr, "h_norm_analytical_solution = %f\n", h_norm_analytical_solution);
+    cudacall(cudaFree((cuComplex *)dev_C));
+
+//    fprintf(stderr, "relative error:\t%f\n", h_result);
 
     return h_result;
 }
