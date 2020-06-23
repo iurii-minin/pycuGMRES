@@ -40,7 +40,7 @@ def get_function(fun_description, path_to_so):
 def get_cylinder_mask(m):    
     cylinder_mask = np.zeros((m, m)).astype('bool')
     x, y = np.mgrid[0:m, 0:m]
-    cylinder_mask[(y- m/3)**2 + (x - m / 2)**2 <= (m/ 6) ** 2 ] = True
+    cylinder_mask[(x- m/3)**2 + (y - m / 2)**2 <= (m/ 6) ** 2 ] = True
     return cylinder_mask.reshape(-1)
 
 def get_greenfun(r,k):
