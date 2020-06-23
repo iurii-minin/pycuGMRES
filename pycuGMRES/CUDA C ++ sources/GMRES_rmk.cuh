@@ -108,7 +108,7 @@ void pycuGMRESrmk(
 //		cuComplex *dev_gamma_array;
 		cuComplex *dev_analytical_solution;
 //				cuComplex *dev_solution;
-		float *dev_actual_residual;
+//		float *dev_actual_residual;
 //				float h_result = 0.f;
 		float h_norm_analytical_solution = 0.f;
 //		unsigned int GMRES_n = 0;
@@ -152,7 +152,7 @@ void pycuGMRESrmk(
 
 		{
 
-			cudacall(cudaMalloc((void**)&dev_actual_residual, (maxiter + 1) * sizeof(float)));
+//			cudacall(cudaMalloc((void**)&dev_actual_residual, (maxiter + 1) * sizeof(float)));
 
 			const char *allocation_result = pycuGetSubsidiary(
 						(devSubsidiary *)dev_subs_internal, 
@@ -248,7 +248,7 @@ void pycuGMRESrmk(
 		cusolverDnDestroy(cusolverH);
 		free((timespec *)h_computation_times);
 		cublascall(cublasDestroy_v2(handle));
-		cudacall(cudaFree((float *)dev_actual_residual));
+//		cudacall(cudaFree((float *)dev_actual_residual));
 	}
 
 	free(n_timestamps_array);
