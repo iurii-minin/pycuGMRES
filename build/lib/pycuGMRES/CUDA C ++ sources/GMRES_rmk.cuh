@@ -23,8 +23,8 @@ void pycuGMRESrmk(
 	unsigned int rep_st = 0;
 	unsigned int rep_en = 0;
 
-	unsigned int pow_st = 11;
-	unsigned int pow_en = 11;
+	unsigned int pow_st = 10;
+	unsigned int pow_en = 10;
 
 	unsigned int min_maxiter = 30;
 	unsigned int max_maxiter = 30;
