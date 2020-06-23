@@ -125,7 +125,7 @@ void pycuGMRESrmk(
 				cuComplex *dev_analytical_solution;
 //				cuComplex *dev_solution;
 				float *dev_actual_residual;
-				float h_result = 0.f;
+//				float h_result = 0.f;
 				float h_norm_analytical_solution = 0.f;
 				unsigned int GMRES_n = 0;
 				timespec *h_computation_times = (timespec *) malloc(n_timestamps_array[maxiter] * sizeof(timespec));
@@ -161,10 +161,10 @@ void pycuGMRESrmk(
 				time_t clock_time;
 				float diff_time = 0.f;
 				float diff_average = 0.f;
-				cuComplex alpha;
-				alpha.x = -1.f;
-				alpha.y = 0.f;
-				const cuComplex *p_alpha = &alpha;
+//				cuComplex alpha;
+//				alpha.x = -1.f;
+//				alpha.y = 0.f;
+//				const cuComplex *p_alpha = &alpha;
 
 				{
 
@@ -225,30 +225,30 @@ void pycuGMRESrmk(
 					sprintf(buffer, "time_%u/times", N);
 					save_test_timespec_CPU((char *)buffer, (timespec *)h_computation_times, maxiter * 100 + repetition_i, n_timestamps_array[maxiter]);
 
-					cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_HOST);
+//					cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_HOST);
 
-					cublascall(cublasScnrm2(handle, N * N,
-								    (const cuComplex *)dev_solution, 1, (float  *)&h_result));
+//					cublascall(cublasScnrm2(handle, N * N,
+//								    (const cuComplex *)dev_solution, 1, (float  *)&h_result));
 
-					fprintf(stderr, "Norm of solution = %f\n", h_result);
-
-
-					cublascall(cublasCaxpy(handle, N * N,
-								   (const cuComplex *)p_alpha,
-								   (const cuComplex *)dev_analytical_solution, 1,
-								   (cuComplex *)dev_solution, 1));
+//					fprintf(stderr, "Norm of solution = %f\n", h_result);
 
 
-					cublascall(cublasScnrm2(handle, N * N,
-								    (const cuComplex *)dev_solution, 1, (float  *)&h_result));
+//					cublascall(cublasCaxpy(handle, N * N,
+//								   (const cuComplex *)p_alpha,
+//								   (const cuComplex *)dev_analytical_solution, 1,
+//								   (cuComplex *)dev_solution, 1));
 
-					fprintf(stderr, "Norm of diff = %f\n", h_result);
 
-					h_result = h_result / h_norm_analytical_solution;
+//					cublascall(cublasScnrm2(handle, N * N,
+//								    (const cuComplex *)dev_solution, 1, (float  *)&h_result));
 
-					fprintf(stderr, "File relative_error writing\t%f\n", h_result);
-					sprintf(buffer, "time_%u/relative_error", N);
-					save_test_F_CPU((char *)buffer, (float *)&h_result, maxiter * 100 + repetition_i, 1);
+//					fprintf(stderr, "Norm of diff = %f\n", h_result);
+
+//					h_result = h_result / h_norm_analytical_solution;
+
+//					fprintf(stderr, "File relative_error writing\t%f\n", h_result);
+//					sprintf(buffer, "time_%u/relative_error", N);
+//					save_test_F_CPU((char *)buffer, (float *)&h_result, maxiter * 100 + repetition_i, 1);
 				}
 
 				fprintf(stderr, "diff = %f\n", diff_average);
