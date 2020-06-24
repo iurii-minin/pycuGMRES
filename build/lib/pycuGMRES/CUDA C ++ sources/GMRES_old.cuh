@@ -24,7 +24,7 @@ void Fast_GMRES_with_CUDA(
         devSubsidiary *dev_subs,
 		    timespec *h_computation_times_ts)
 {
-	float **dev_actual_residual_p = NULL;
+	float **dev_actual_residual_p;
 	cusolverDnHandle_t cusolverH = *cusolverH_p;
   time_t *h_computation_times = (time_t *)malloc(300000 * sizeof(time_t));
 
