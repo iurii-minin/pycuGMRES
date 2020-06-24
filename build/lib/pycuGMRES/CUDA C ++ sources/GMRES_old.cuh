@@ -24,7 +24,6 @@ void Fast_GMRES_with_CUDA(
         devSubsidiary *dev_subs,
 		    timespec *h_computation_times_ts)
 {
-	float **dev_actual_residual_p;
 	cusolverDnHandle_t cusolverH = *cusolverH_p;
   time_t *h_computation_times = (time_t *)malloc(300000 * sizeof(time_t));
 
@@ -69,7 +68,6 @@ void Fast_GMRES_with_CUDA(
 	cudacall(cudaMalloc((void**)&dev_orthogonal_basis, 	(maxiter + 1) * N * N * sizeof(cuComplex)));
 	cudacall(cudaMalloc((void**)&dev_Hjk_norm_part, 				    sizeof(float)));
 	cudacall(cudaMalloc((void**)&dev_scal_mul, 					    sizeof(float)));
-	cudacall(cudaMalloc((void**)dev_actual_residual_p, 		    (maxiter + 1) * sizeof(float)));
 	cudacall(cudaMalloc((void**)&dev_res_vs_tol, 					     sizeof(bool)));
 
 	cudacall(cudaMalloc((void**)&dev_cc, 			  	  (maxiter + 1) * sizeof(cuComplex)));
@@ -122,12 +120,12 @@ void Fast_GMRES_with_CUDA(
 	cublascall(cublasScnrm2(        (cublasHandle_t) *handle_p,
 					N * N,
 		                        (const cuComplex *)dev_residual_vec, 1,
-					(float  *)*dev_actual_residual_p));
+					(float  *)dev_actual_residual));
 	cudacheckSYN();
 
 	h_computation_times[clock_i++] = clock(); //_4_
 //============================================= Begin: Condition to iterate ==========================================================
-	residual_vs_tolerance_kernel <<< 1, 1 >>> (	(float *)*dev_actual_residual_p,
+	residual_vs_tolerance_kernel <<< 1, 1 >>> (	(float *)dev_actual_residual,
 							(bool *)dev_res_vs_tol,
 							tolerance);
 	cudacheckSYN();
@@ -138,7 +136,7 @@ void Fast_GMRES_with_CUDA(
 //=============================================== End: Condition to iterate ===========================================================
 //============================================BEGIN:residual_normalization_kernel=======================================================
 	residual_normalization_kernel <<< gridsize, blocksize >>> (	(cuComplex *)dev_residual_vec,
-									(float *)*dev_actual_residual_p,
+									(float *)dev_actual_residual,
 									(cuComplex *)dev_orthogonal_basis);
 	cudacheckSYN();
 
@@ -254,10 +252,10 @@ void Fast_GMRES_with_CUDA(
 		h_computation_times[clock_i ++] = clock(); //_16_
 	//=============================================== END: Create Givens_Rotation_Matrix,  ========================================
 	//===================================================== BEGIN: Update residual ======================================================
-		next_residual_kernel <<< 1, 1 >>> ((cuComplex *)dev_Jtotal + 2, (float *)*dev_actual_residual_p, (float *)*dev_actual_residual_p + 1);
+		next_residual_kernel <<< 1, 1 >>> ((cuComplex *)dev_Jtotal + 2, (float *)dev_actual_residual, (float *)dev_actual_residual + 1);
 		cudacheckSYN();
 
-		residual_vs_tolerance_kernel <<< 1, 1 >>> (	(float *)*dev_actual_residual_p + 1,
+		residual_vs_tolerance_kernel <<< 1, 1 >>> (	(float *)dev_actual_residual + 1,
 								(bool *)dev_res_vs_tol,
 								tolerance);
 		cudacheckSYN();
@@ -409,10 +407,10 @@ void Fast_GMRES_with_CUDA(
 		//==================================================== END: Jtotal = J*Jtotal =================================================
 		//===================================================== BEGIN: Update residual ======================================================
 			next_residual_kernel <<< 1, 1 >>> (	(cuComplex *)dev_Jtotal + (GMRES_i + 2) * (GMRES_i + 1),
-								(float *)*dev_actual_residual_p,
-								(float *)*dev_actual_residual_p + GMRES_i + 1);
+								(float *)dev_actual_residual,
+								(float *)dev_actual_residual + GMRES_i + 1);
 
-			residual_vs_tolerance_kernel <<< 1, 1 >>> (	(float *)((*dev_actual_residual_p) + GMRES_i + 1),
+			residual_vs_tolerance_kernel <<< 1, 1 >>> (	(float *)(dev_actual_residual + GMRES_i + 1),
 									(bool *)dev_res_vs_tol, tolerance);
 			cudacheckSYN();
 
@@ -451,7 +449,7 @@ void Fast_GMRES_with_CUDA(
 	//================================================= BEGIN: cc = Jtotal * norm_res_vec =========================================================
 		set_cc_kernel <<< GMRES_i, 1 >>> (	(cuComplex *)dev_cc,
 							(cuComplex *)dev_Jtotal,
-							(float *)*dev_actual_residual_p,
+							(float *)dev_actual_residual,
 							maxiter + 1);
 		cudacheckSYN();
 		h_computation_times[clock_i ++] = clock(); //_31_
@@ -507,8 +505,6 @@ void Fast_GMRES_with_CUDA(
 	cudacall(cudaFree((cuComplex *)dev_resized));
 
 	h_computation_times[clock_i ++] = clock(); //_36_
-
-	dev_actual_residual = *dev_actual_residual_p;
 }
 
 
