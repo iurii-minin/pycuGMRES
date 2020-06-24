@@ -19,7 +19,7 @@ void show_norm_F(	const char *description,
 			const float *dev_array,
 			const unsigned int size_array);
 
-void pycuGMRES(	
+void pycuGMRESimproved(	
                     bool *dev_mask,
                     cuComplex *dev_solution,
 		    const bool for_gradient,

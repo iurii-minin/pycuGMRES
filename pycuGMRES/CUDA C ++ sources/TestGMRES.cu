@@ -205,7 +205,7 @@ void pycuTestGMRES()
 								(cusolverDnHandle_t)cusolverH,
 								(timespec *)h_computation_times, N);
 
-*/					pycuGMRES(	
+*/					pycuGMRESold(	
 							    (bool *)dev_mask,
 							    (cuComplex *)dev_solution,
 							    false,

@@ -265,7 +265,7 @@ void pycuGMRESold(
 	//======================================================= END: Update residual ======================================================
 		GMRES_i ++;
 
-		for(GMRES_i = 1; ((GMRES_i < maxiter)); GMRES_i ++) //h_res_vs_tol &&
+		for(GMRES_i = 1; (h_res_vs_tol && (GMRES_i < maxiter)); GMRES_i ++) //
 		{
 			h_computation_times[clock_i ++] = clock(); //_18_
 

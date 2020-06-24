@@ -279,8 +279,8 @@ pycuFFTC2C.argtypes = [
 	                      c_uint              # const cufftHandle plan
 		      ]
 
-pycuGMRES = get_function('pycuGMRES', path_to_so)
-pycuGMRES.argtypes = [
+pycuGMRESimproved = get_function('pycuGMRESimproved', path_to_so)
+pycuGMRESimproved.argtypes = [
                       POINTER(c_bool),           # bool *dev_mask
                       POINTER(c_complex),        # cuComplex *dev_solution
                       c_bool,                    # const bool for_gradient
