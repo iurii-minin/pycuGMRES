@@ -16,7 +16,10 @@
 
 unsigned int *get_n_timestamps_array_improved(unsigned int max_maxiter);
 
+#include "GMRES_old_kernels.cuh"
+#include "GMRES_old.cuh"
 #include "GMRES_rmk.cuh"
+
 
 void pycuTestGMRES()
 {		

@@ -17,10 +17,8 @@ void pycuGMRESrmk(
                     timespec *h_computation_times
                )
 {
-//	pycuInitSolution((cuComplex *)dev_solution, N);
 
-
-	pycuGMRES(	
+	Fast_GMRES_with_CUDA(	
 				  (bool *)dev_mask,
 				  (cuComplex *)dev_solution,
 				  for_gradient,
