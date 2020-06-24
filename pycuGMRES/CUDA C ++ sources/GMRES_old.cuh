@@ -6,7 +6,7 @@ void cuSolve_LES(	cuComplex *d_A,
 			unsigned int *clock_i_p);
 
 
-void Fast_GMRES_with_CUDA(
+void pycuGMRESold(
         bool *dev_mask,
         cuComplex *dev_solution,
 		    const bool for_gradient,

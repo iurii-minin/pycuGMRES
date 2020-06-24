@@ -299,8 +299,8 @@ pycuGMRES.argtypes = [
                       POINTER(c_timespec)        # timespec *computation_times
                                            ]
 
-pycuGMRESrmk = get_function('pycuGMRESrmk', path_to_so)
-pycuGMRESrmk.argtypes = [
+pycuGMRESold = get_function('pycuGMRESold', path_to_so)
+pycuGMRESold.argtypes = [
                       POINTER(c_bool),           # bool *dev_mask
                       POINTER(c_complex),        # cuComplex *dev_solution
                       c_bool,                    # const bool for_gradient

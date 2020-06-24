@@ -93,8 +93,6 @@ void pycuGMRES(
 	dev_Ipiv = dev_info + 1;
 							
 	clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_1_ //Initialization
-
-	saveGPUrealtxt_C(dev_solution, "/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Output/dev_solution", N * N);
 //========================================= BEGIN: get_residual_vector =======================================================
 	if (for_gradient)
 	{
@@ -127,7 +125,6 @@ void pycuGMRES(
 	}
 	cudacheckSYN();
 
-	saveGPUrealtxt_C(dev_vec_resudual, "/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Output/dev_vec_resudual_1", N * N);
 	clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_3_
 //========================================== END: get_residual_vector =========================================================
 	cublascall(cublasScnrm2(        (cublasHandle_t) *handle_p,
@@ -152,12 +149,10 @@ void pycuGMRES(
 	//don't synchronize
 
 	clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_6_
-
-	saveGPUrealtxt_C(dev_vec_resudual, "/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Output/dev_vec_resudual_2", N * N);
 //============================================= END:residual_normalization_kernel ==================================================
 	if (h_residual_initial > tolerance)
 	{
-        	fprintf(stderr, "GMRES_i = %u\n", GMRES_i);
+//        	fprintf(stderr, "GMRES_i = %u\n", GMRES_i);
 
 		cudacall(cudaMemsetAsync((cuComplex *)dev_H_, 0, maxiter_plus_1 * maxiter * sizeof(cuComplex)));		//don't synchronize
 
@@ -259,7 +254,7 @@ void pycuGMRES(
 		for(GMRES_i = 1; ((GMRES_i < maxiter)); GMRES_i ++) //(h_actual_residual > tolerance) &&
 		{
 
-                	fprintf(stderr, "GMRES_i = %u\n", GMRES_i);
+//                	fprintf(stderr, "GMRES_i = %u\n", GMRES_i);
 
 			clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_18_
 
