@@ -258,6 +258,7 @@ void pycuGMRES(
 			{
 				break;
 			}
+			fprintf(stderr, "h_actual_residual = %f\ttolerance=%f\n", h_actual_residual, tolerance);
 
 //                	fprintf(stderr, "GMRES_i = %u\n", GMRES_i);
 
