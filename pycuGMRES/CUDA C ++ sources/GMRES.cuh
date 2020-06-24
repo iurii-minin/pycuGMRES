@@ -251,7 +251,7 @@ void pycuGMRES(
 	//======================================================= END: Update residual ======================================================
 		GMRES_i ++;
 
-		for(GMRES_i = 1; ((GMRES_i < maxiter)); GMRES_i ++) //(h_actual_residual > tolerance) &&
+		for(GMRES_i = 1; ((h_actual_residual > tolerance) && (GMRES_i < maxiter)); GMRES_i ++)
 		{
 
 //                	fprintf(stderr, "GMRES_i = %u\n", GMRES_i);
