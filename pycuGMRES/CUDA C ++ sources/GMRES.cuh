@@ -254,6 +254,11 @@ void pycuGMRES(
 		for(GMRES_i = 1; ((h_actual_residual > tolerance) && (GMRES_i < maxiter)); GMRES_i ++)
 		{
 
+			if (h_actual_residual < tolerance)
+			{
+				break;
+			}
+
 //                	fprintf(stderr, "GMRES_i = %u\n", GMRES_i);
 
 			clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_18_
