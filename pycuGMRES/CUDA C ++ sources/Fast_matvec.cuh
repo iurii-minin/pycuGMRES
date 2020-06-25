@@ -54,4 +54,3 @@ void G_x_fft_matvec(	cuComplex *dev_gamma_array, // For gradient matvec (dev_mas
 				CUFFT_INVERSE));
 	cudacheckSYN();
 }
-

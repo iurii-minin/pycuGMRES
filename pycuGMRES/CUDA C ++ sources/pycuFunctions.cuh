@@ -14,11 +14,11 @@ void pycuInitSolution(
 		        const unsigned int N     
                      )
 {
-    dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
-    dim3 threads(Q, Q);
+		dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
+		dim3 threads(Q, Q);
 
-    init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
-    cudacheckSYN();
+		init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
+		cudacheckSYN();
 }
 
 cufftHandle pycuGetPlan(const unsigned int N)
@@ -185,4 +185,36 @@ void pycuFFTC2C(cuComplex *dev_input, cuComplex *dev_output, cufftHandle plan)
 {
     cufftcall(cufftExecC2C(plan, (cuComplex *)dev_input, (cuComplex *)dev_output, CUFFT_FORWARD));
     cudacheckSYN();
+}
+
+void pycuGxFFTmatvec_grad(	
+			cuComplex *dev_gamma_array, // For gradient matvec (dev_mask is absent)
+			cuComplex *dev_solution,
+			cuComplex *dev_matmul_out_extended,
+			cufftHandle plan,
+			const unsigned int N)
+{
+	G_x_fft_matvec(	(cuComplex  *)dev_gamma_array, // For gradient matvec (dev_mask is absent)
+			(cuComplex  *)dev_solution,
+			(cuComplex  *)dev_matmul_out_extended,
+			(cufftHandle )plan,
+										N);
+}
+
+void pycu2Dto1Dgrad( //For gradient computations
+					bool *dev_mask,
+					cuComplex *dev_input_mul,
+					cuComplex *dev_2D_in,
+					cuComplex *dev_1D_out,
+					const unsigned int N)
+{
+	dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
+	dim3 threads(Q, Q);
+
+	_2D_to_1D_kernel <<< blocks, threads >>> (	(bool *)dev_mask,
+				(cuComplex *)dev_input_mul,
+				(cuComplex *)dev_2D_in,
+				(cuComplex *)dev_1D_out,
+				N);
+	cudacheckSYN();
 }
