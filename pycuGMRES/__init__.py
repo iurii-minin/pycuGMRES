@@ -330,9 +330,9 @@ pycuGxFFTmatvec_grad.argtypes = [
 
 pycu2Dto1Dgrad = get_function('pycu2Dto1Dgrad', path_to_so)
 pycu2Dto1Dgrad.argtypes = [	
-			POINTER(c_complex)	# cuComplex *dev_solution, 
-			POINTER(c_complex)	# cuComplex *dev_new_z_extended, 
-			POINTER(c_float)	# float *dev_gradient, 
-			c_uint			# const unsigned int h_index_of_max,
+			POINTER(c_complex),	# cuComplex *dev_solution, 
+			POINTER(c_complex),	# cuComplex *dev_new_z_extended, 
+			POINTER(c_float),	# float *dev_gradient, 
+			c_uint,			# const unsigned int h_index_of_max,
 			c_uint			# const unsigned int N)
 						]
