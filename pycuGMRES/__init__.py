@@ -324,6 +324,6 @@ pycuGxFFTmatvec_grad.argtypes = [
 			POINTER(c_complex), # cuComplex *dev_gamma_array,
 			POINTER(c_complex), # cuComplex *dev_solution,
 			POINTER(c_complex), # cuComplex *dev_matmul_out_extended,
-			c_uint              # cufftHandle plan,
+			c_uint,             # cufftHandle plan,
 			c_uint              # const unsigned int N
 						]
