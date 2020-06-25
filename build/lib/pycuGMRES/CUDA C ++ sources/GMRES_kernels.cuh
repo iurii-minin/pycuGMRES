@@ -340,6 +340,28 @@ __global__ void _2D_to_1D_kernel(	bool *dev_mask, //For gradient computations
 	dev_1D_out[_1D_index] = current;
 }
 
+__global__ void _2D_to_1D_kernel(
+					cuComplex *dev_solution, 
+					cuComplex *dev_new_z_extended, 
+					float *dev_gradient, 
+					const unsigned int h_index_of_max,
+					const unsigned int N)
+{ 
+	unsigned int i = Q * blockIdx.x + threadIdx.x;
+	unsigned int j = Q * blockIdx.y + threadIdx.y;
+	unsigned int Ni = N * i;
+	unsigned int _1D_index = Ni + j;
+	unsigned int _2D_index = _1D_index + Ni - i;
+	cuComplex dev_new_z = dev_new_z_extended[_2D_index];
+	cuComplex dev_x = dev_solution[_1D_index];
+	dev_new_z.x = CHI * (dev_new_z.x * dev_x.x - dev_new_z.y * dev_x.y);
+	dev_new_z.y = CHI * (dev_new_z.x * dev_x.y + dev_new_z.y * dev_x.x);
+
+	dev_new_z.x = dev_new_z.x * dev_solution[h_index_of_max].x + dev_new_z.y * dev_solution[h_index_of_max].y;
+
+	dev_gradient[_1D_index] = 2 * dev_new_z.x;
+}
+
 
 __global__ void weight_subtract_kernel(	cuComplex *dev_weight,
 					cuComplex *dev_Hjk,

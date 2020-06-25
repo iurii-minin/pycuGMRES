@@ -202,19 +202,20 @@ void pycuGxFFTmatvec_grad(
 }
 
 void pycu2Dto1Dgrad( //For gradient computations
-					bool *dev_mask,
-					cuComplex *dev_input_mul,
-					cuComplex *dev_2D_in,
-					cuComplex *dev_1D_out,
+					cuComplex *dev_solution, 
+					cuComplex *dev_new_z_extended, 
+					float *dev_gradient, 
+					const unsigned int h_index_of_max,
 					const unsigned int N)
 {
 	dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
 	dim3 threads(Q, Q);
 
-	_2D_to_1D_kernel <<< blocks, threads >>> (	(bool *)dev_mask,
-				(cuComplex *)dev_input_mul,
-				(cuComplex *)dev_2D_in,
-				(cuComplex *)dev_1D_out,
-				N);
+	_2D_to_1D_kernel <<< blocks, threads >>> (
+					(cuComplex    *)dev_solution, 
+					(cuComplex    *)dev_new_z_extended, 
+					(float        *)dev_gradient, 
+													h_index_of_max,
+													N);
 	cudacheckSYN();
 }
