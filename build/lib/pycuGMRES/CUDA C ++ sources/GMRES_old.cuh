@@ -7,22 +7,23 @@ void cuSolve_LES(	cuComplex *d_A,
 
 
 void pycuGMRESold(
-        bool *dev_mask,
-        cuComplex *dev_solution,
-		    const bool for_gradient,
-		    const unsigned int h_index_of_max,
-		    unsigned int maxiter,
-		    const float tolerance,
-		    unsigned int *GMRES_n,
-		    float *dev_actual_residual,
-		    bool *h_res_vs_tol_p,
-		    const unsigned int N,
-        cuComplex *dev_gamma_array,
-        const cufftHandle plan,
-        cublasHandle_t *handle_p,
-        cusolverDnHandle_t *cusolverH_p,
-        devSubsidiary *dev_subs,
-		    timespec *h_computation_times_ts)
+			bool *dev_mask,
+			cuComplex *dev_solution,
+			const bool for_gradient,
+			const unsigned int h_index_of_max,
+			const float h_sigma,
+			unsigned int maxiter,
+			const float tolerance,
+			unsigned int *GMRES_n,
+			float *dev_actual_residual,
+			bool *h_res_vs_tol_p,
+			const unsigned int N,
+			cuComplex *dev_gamma_array,
+			const cufftHandle plan,
+			cublasHandle_t *handle_p,
+			cusolverDnHandle_t *cusolverH_p,
+			devSubsidiary *dev_subs,
+			timespec *h_computation_times_ts)
 {
 	cusolverDnHandle_t cusolverH = *cusolverH_p;
   time_t *h_computation_times = (time_t *)malloc(300000 * sizeof(time_t));
@@ -111,7 +112,8 @@ void pycuGMRESold(
 
 		_2D_to_1D_compared_kernel <<< blocks, threads >>> (	(cuComplex *)dev_solution,
 									(cuComplex*)dev_matmul_out_extended,
-									(cuComplex*)dev_residual_vec, N);
+									(cuComplex*)dev_residual_vec, 
+									h_sigma, N);
 	}
 	cudacheckSYN();
 

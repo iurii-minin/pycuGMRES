@@ -179,6 +179,7 @@ __device__ __forceinline__ cuComplex my_cexpf(cuComplex z) //FOR ONLY z.x = 0.f;
 __global__ void _2D_to_1D_compared_kernel(	cuComplex *dev_input_mul,  //For GMRES to compute LES for Helmholtz equation (mask and target index are absent)
 						cuComplex *dev_2D_in,
 						cuComplex *dev_residual,
+						const float h_sigma,
 						const unsigned int N)
 {
 	unsigned int i = Q * blockIdx.x + threadIdx.x;
@@ -196,9 +197,13 @@ __global__ void _2D_to_1D_compared_kernel(	cuComplex *dev_input_mul,  //For GMRE
 
 		Input_Field.y = - WAVE_NUMBER * (i * cos(ALPHA) + j * sin(ALPHA));
 		Input_Field = my_cexpf(Input_Field);
-		float sigma = N * 0.6;
-		Input_Field.x = Input_Field.x * exp(-pow((float)((float)(j) - (N/2.f - 0.5f)), 2.f)/pow(sigma, 2.f))/(sigma * sqrt(2.f * 3.14f));
-		Input_Field.y = Input_Field.y * exp(-pow((float)((float)(j) - (N/2.f - 0.5f)), 2.f)/pow(sigma, 2.f))/(sigma * sqrt(2.f * 3.14f));
+
+		if (h_sigma > 0.f)
+		{
+			Input_Field.x = Input_Field.x * exp(-pow((float)((float)(j) - (N/2.f - 0.5f)), 2.f)/pow(h_sigma, 2.f))/(h_sigma * sqrt(2.f * 3.14f));
+			Input_Field.y = Input_Field.y * exp(-pow((float)((float)(j) - (N/2.f - 0.5f)), 2.f)/pow(h_sigma, 2.f))/(h_sigma * sqrt(2.f * 3.14f));
+		}
+
 		Input_Field.x += current_2D.x / ((N << 1) - 1) / ((N << 1) - 1) - arg_old.x;
 		Input_Field.y += current_2D.y / ((N << 1) - 1) / ((N << 1) - 1) - arg_old.y;
 		dev_residual[_1D_index] = Input_Field;
@@ -591,6 +596,7 @@ __global__ void add_kernel(	cuComplex *dev_solution,
 
 
 __global__ void init_x0_kernel(	cuComplex *dev_input,
+				const float h_sigma,
 				const unsigned int N)
 {
 	unsigned int i = Q * blockIdx.x + threadIdx.x;
@@ -599,8 +605,10 @@ __global__ void init_x0_kernel(	cuComplex *dev_input,
 
 	Input_Field.y = - WAVE_NUMBER * (i * cos(ALPHA) + j * sin(ALPHA));
 	Input_Field = my_cexpf(Input_Field);
-	float sigma = N * 0.6;
-	Input_Field.x = Input_Field.x * exp(-pow((float)((float)(j) - (N/2.f - 0.5f)), 2.f)/pow(sigma, 2.f))/(sigma * sqrt(2.f * 3.14f));
-	Input_Field.y = Input_Field.y * exp(-pow((float)((float)(j) - (N/2.f - 0.5f)), 2.f)/pow(sigma, 2.f))/(sigma * sqrt(2.f * 3.14f));
-	dev_input[i * N + j] = Input_Field;
+	if (h_sigma > 0.f)
+	{
+		Input_Field.x = Input_Field.x * exp(-pow((float)((float)(j) - (N/2.f - 0.5f)), 2.f)/pow(h_sigma, 2.f))/(h_sigma * sqrt(2.f * 3.14f));
+		Input_Field.y = Input_Field.y * exp(-pow((float)((float)(j) - (N/2.f - 0.5f)), 2.f)/pow(h_sigma, 2.f))/(h_sigma * sqrt(2.f * 3.14f));
+		dev_input[i * N + j] = Input_Field;
+	}
 }

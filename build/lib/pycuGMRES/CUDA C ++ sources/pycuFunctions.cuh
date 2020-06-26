@@ -11,13 +11,14 @@ void pycuSetDevice(const unsigned int visible_device)
 
 void pycuInitSolution(
 		        cuComplex *dev_solution,
+						const float h_sigma,
 		        const unsigned int N     
                      )
 {
 		dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
 		dim3 threads(Q, Q);
 
-		init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
+		init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, h_sigma, N);
 		cudacheckSYN();
 }
 

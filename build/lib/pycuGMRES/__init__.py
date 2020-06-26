@@ -214,7 +214,7 @@ pycugpu2host = get_function('pycugpu2host', path_to_so)
 pycugpu2host.argtypes = [c_void_p, c_void_p, c_uint, c_size_t]
 
 pycuInitSolution = get_function('pycuInitSolution', path_to_so)
-pycuInitSolution.argtypes = [POINTER(c_complex), c_uint]
+pycuInitSolution.argtypes = [POINTER(c_complex), c_float, c_uint]
 
 pycuSetDevice = get_function('pycuSetDevice', path_to_so)
 pycuSetDevice.argtype = c_uint
@@ -285,6 +285,7 @@ pycuGMRESimproved.argtypes = [
                       POINTER(c_complex),        # cuComplex *dev_solution
                       c_bool,                    # const bool for_gradient
                       c_uint,                    # const unsigned int h_index_of_max
+                      c_float,                   # const float h_sigma
                       c_uint,                    # unsigned int maxiter
                       c_float,                   # const float tolerance
                       POINTER(c_uint),           # unsigned int *GMRES_n
@@ -305,6 +306,7 @@ pycuGMRESold.argtypes = [
                       POINTER(c_complex),        # cuComplex *dev_solution
                       c_bool,                    # const bool for_gradient
                       c_uint,                    # const unsigned int h_index_of_max
+                      c_float,                   # const float h_sigma
                       c_uint,                    # unsigned int maxiter
                       c_float,                   # const float tolerance
                       POINTER(c_uint),           # unsigned int *GMRES_n

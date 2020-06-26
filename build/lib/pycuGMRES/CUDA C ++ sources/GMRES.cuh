@@ -24,6 +24,7 @@ void pycuGMRESimproved(
                     cuComplex *dev_solution,
 		    const bool for_gradient,
 		    const unsigned int h_index_of_max,
+		    const float h_sigma,
 		    unsigned int maxiter,
 		    const float tolerance,
 		    unsigned int *GMRES_n,
@@ -115,13 +116,16 @@ void pycuGMRESimproved(
 				(bool *)dev_mask,
 				(cuComplex *)dev_solution,
 				(cuComplex *)dev_extended,
-				(cufftHandle)plan, N);
+				(cufftHandle)plan, 
+				N);
 
 		clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_2_
 
-		_2D_to_1D_compared_kernel <<< blocks, threads >>> (	(cuComplex *)dev_solution,
-									(cuComplex*)dev_extended,
-									(cuComplex*)dev_vec_resudual, N);
+		_2D_to_1D_compared_kernel <<< blocks, threads >>> (	
+									(cuComplex *)dev_solution,
+									(cuComplex *)dev_extended,
+									(cuComplex *)dev_vec_resudual,
+									h_sigma, N);
 	}
 	cudacheckSYN();
 

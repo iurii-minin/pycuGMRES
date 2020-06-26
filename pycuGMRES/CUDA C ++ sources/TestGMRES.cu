@@ -185,7 +185,7 @@ void pycuTestGMRES()
 					cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_DEVICE);
 					fprintf(stderr, "maxiter = %i\trepetition_i = %i\n", maxiter, repetition_i);
 
-					init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, N);
+					init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, -1.f, N);
 					cudacheckSYN();
 
 					memset(h_computation_times, 0, n_timestamps_array[maxiter] * sizeof(timespec));
@@ -210,6 +210,7 @@ void pycuTestGMRES()
 							    (cuComplex *)dev_solution,
 							    false,
 							    0,
+									-1.f,
 							    maxiter,
 							    tolerance,
 							    (unsigned int *)&GMRES_n,
