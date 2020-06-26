@@ -175,12 +175,12 @@ void pycuTestGMRES()
 
 					cudacall(cudaMalloc((void**)&dev_actual_residual, (maxiter + 1) * sizeof(float)));
 
-					const unsigned int allocation_result = pycuGetSubsidiary(
+					const cudaError_t *allocation_result = pycuGetSubsidiary(
 								(devSubsidiary *)dev_subs, 
 								N, 
 								maxiter);
 
-					fprintf(stderr, "Allocation memory (vs. 0): %u\n", allocation_result);
+					fprintf(stderr, "Allocation memory (vs. 0): %d\n", allocation_result[0]);
 
 					cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_DEVICE);
 					fprintf(stderr, "maxiter = %i\trepetition_i = %i\n", maxiter, repetition_i);

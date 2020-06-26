@@ -158,16 +158,17 @@ void pycugpu2host(void *h_array, void *dev_array, unsigned int amount, size_t un
 //}
 
 
-cudaError_t pycuGetSubsidiary(devSubsidiary *dev_subs, unsigned int N, unsigned int maxiter)
+cudaError_t *pycuGetSubsidiary(devSubsidiary *dev_subs, unsigned int N, unsigned int maxiter)
 {
-    cudaError_t err = cudaMalloc((void**)&(dev_subs->dev_orthogonal_basis), ((maxiter + 6) * N * N - 8 * N + 1) * sizeof(cuComplex));
-    if(cudaSuccess != err)
+    cudaError_t *h_err = (cudaError_t *)malloc(sizeof(cudaError_t));
+    h_err[0] = cudaMalloc((void**)&(dev_subs->dev_orthogonal_basis), ((maxiter + 6) * N * N - 8 * N + 1) * sizeof(cuComplex));
+    if(cudaSuccess != h_err[0])
     {
-        return err;
+        return h_err;
     }
-    err = cudaMalloc((void**)&(dev_subs->dev_info), (maxiter + 1) * sizeof(int));
+    h_err[0] = cudaMalloc((void**)&(dev_subs->dev_info), (maxiter + 1) * sizeof(int));
 
-    return err;
+    return h_err;
 }
 
 void pycuDestroySubsidiary(devSubsidiary *dev_subs)

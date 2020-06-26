@@ -225,7 +225,7 @@ pycuGetPlan.restype = c_uint
 
 pycuGetSubsidiary = get_function('pycuGetSubsidiary', path_to_so)
 pycuGetSubsidiary.argtypes = [POINTER(c_devSubsidiary), c_uint, c_uint]
-pycuGetSubsidiary.restype = c_uint
+pycuGetSubsidiary.restype = POINTER(c_uint)
 
 pycuHandleBlas = get_function('pycuHandleBlas', path_to_so)
 pycuHandleBlas.restype = POINTER(c_longlong)
