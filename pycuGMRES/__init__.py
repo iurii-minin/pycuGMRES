@@ -204,7 +204,7 @@ print(os.popen('bash '+ '"' + prefix + 'compile_cpp.sh' + '" "' + FOLDERGMRESdir
 path_to_so = prefix + 'cuGMRES.so'
 
 pycumalloc = get_function('pycumalloc', path_to_so)
-pycumalloc.argtypes = [c_uint, c_size_t]
+pycumalloc.argtypes = [c_uint, c_size_t, POINTER(c_uint)]
 pycumalloc.restype = c_void_p
 
 pycuhost2gpu = get_function('pycuhost2gpu', path_to_so)
@@ -225,7 +225,7 @@ pycuGetPlan.restype = c_uint
 
 pycuGetSubsidiary = get_function('pycuGetSubsidiary', path_to_so)
 pycuGetSubsidiary.argtypes = [POINTER(c_devSubsidiary), c_uint, c_uint]
-pycuGetSubsidiary.restype = c_char_p
+pycuGetSubsidiary.restype = c_uint
 
 pycuHandleBlas = get_function('pycuHandleBlas', path_to_so)
 pycuHandleBlas.restype = POINTER(c_longlong)

@@ -129,12 +129,14 @@ float pycuRelErr(	cuComplex *dev_solution,
 
 
 //extern "C" {
-void *pycumalloc(unsigned int amount, size_t unit_size)
+void *pycumalloc(unsigned int amount, size_t unit_size, cudaError_t *err)
 {
-         void *dev_array;
-         unsigned int size = amount * unit_size;
-         cudacall(cudaMalloc(&dev_array, size));
-         return dev_array;
+    void *dev_array;
+    unsigned int size = amount * unit_size;
+
+    *err = cudaMalloc(&dev_array, size);
+
+    return dev_array;
 }
 //}
 
@@ -156,19 +158,16 @@ void pycugpu2host(void *h_array, void *dev_array, unsigned int amount, size_t un
 //}
 
 
-const char *pycuGetSubsidiary(devSubsidiary *dev_subs, unsigned int N, unsigned int maxiter)
+cudaError_t pycuGetSubsidiary(devSubsidiary *dev_subs, unsigned int N, unsigned int maxiter)
 {
     cudaError_t err = cudaMalloc((void**)&(dev_subs->dev_orthogonal_basis), ((maxiter + 6) * N * N - 8 * N + 1) * sizeof(cuComplex));
     if(cudaSuccess != err)
     {
-        return "no memory";
+        return err;
     }
     err = cudaMalloc((void**)&(dev_subs->dev_info), (maxiter + 1) * sizeof(int));
-    if(cudaSuccess != err)
-    {
-        return "no memory";
-    }
-    return "success";
+
+    return err;
 }
 
 void pycuDestroySubsidiary(devSubsidiary *dev_subs)
