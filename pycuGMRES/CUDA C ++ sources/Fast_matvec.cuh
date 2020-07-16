@@ -3,11 +3,13 @@ void G_x_fft_matvec(	cuComplex *dev_gamma_array, // For usual matvec (dev_mask i
 			cuComplex *dev_solution,
 			cuComplex *dev_matmul_out_extended,
 			cufftHandle plan,
-			const unsigned int N)
+			const unsigned int N,
+			const float chi)
 {
 	extend_by_zeros_kernel <<< dim3(THREADS_PER_BLOCK_M, THREADS_PER_BLOCK_M), dim3(Q, Q) >>> (	(bool *)dev_mask,
-													(cuComplex *)dev_solution,
-													(cuComplex *)dev_matmul_out_extended, N);
+			(cuComplex *)dev_solution,
+			(cuComplex *)dev_matmul_out_extended, N,
+			chi);
 	cudacheckSYN();
 
 	cufftcall(cufftExecC2C(	plan,
@@ -32,11 +34,14 @@ void G_x_fft_matvec(	cuComplex *dev_gamma_array, // For gradient matvec (dev_mas
 			cuComplex *dev_solution,
 			cuComplex *dev_matmul_out_extended,
 			cufftHandle plan,
-			const unsigned int N)
+			const unsigned int N,
+			const float chi)
 {	
 
-	extend_by_zeros_kernel <<< dim3(THREADS_PER_BLOCK_M, THREADS_PER_BLOCK_M), dim3(Q, Q) >>> (	(cuComplex *)dev_solution,
-													(cuComplex *)dev_matmul_out_extended, N);
+	extend_by_zeros_kernel <<< dim3(THREADS_PER_BLOCK_M, THREADS_PER_BLOCK_M), dim3(Q, Q) >>> (	
+			(cuComplex *)dev_solution,
+			(cuComplex *)dev_matmul_out_extended, N,
+			chi);
 
 	cufftcall(cufftExecC2C(	plan,
 				(cuComplex *)dev_matmul_out_extended,

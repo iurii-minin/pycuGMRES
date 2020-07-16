@@ -214,7 +214,12 @@ pycugpu2host = get_function('pycugpu2host', path_to_so)
 pycugpu2host.argtypes = [c_void_p, c_void_p, c_uint, c_size_t]
 
 pycuInitSolution = get_function('pycuInitSolution', path_to_so)
-pycuInitSolution.argtypes = [POINTER(c_complex), c_float, c_uint]
+pycuInitSolution.argtypes = [
+				POINTER(c_complex), # cuComplex          *dev_solution
+				c_float,            # const float         h_sigma
+				c_uint,             # const unsigned int  N
+				c_float             # const float         wavenumber     
+				]
 
 pycuSetDevice = get_function('pycuSetDevice', path_to_so)
 pycuSetDevice.argtype = c_uint
@@ -297,7 +302,10 @@ pycuGMRESimproved.argtypes = [
                       POINTER(c_longlong),       # cublasHandle_t *handle_p
                       POINTER(c_longlong),       # cusolverDnHandle_t *cusolverH_p
                       POINTER(c_devSubsidiary),  # dev_subsidiary *dev_subs
-                      POINTER(c_timespec)        # timespec *computation_times
+                      POINTER(c_timespec),       # timespec *computation_times
+                      c_float,                   # const float wave_number
+                      c_float,                   # const float epsilon_internal
+                      c_float                    # const float epsilon_external
                                            ]
 
 pycuGMRESold = get_function('pycuGMRESold', path_to_so)
@@ -318,23 +326,32 @@ pycuGMRESold.argtypes = [
                       POINTER(c_longlong),       # cublasHandle_t *handle_p
                       POINTER(c_longlong),       # cusolverDnHandle_t *cusolverH_p
                       POINTER(c_devSubsidiary),  # dev_subsidiary *dev_subs
-                      POINTER(c_timespec)        # timespec *computation_times
+                      POINTER(c_timespec),       # timespec *computation_times
+                      c_float,                   # const float wave_number
+                      c_float,                   # const float epsilon_internal
+                      c_float                    # const float epsilon_external
                                            ]
 
 pycuGxFFTmatvec_grad = get_function('pycuGxFFTmatvec_grad', path_to_so)
 pycuGxFFTmatvec_grad.argtypes = [	
-			POINTER(c_complex), # cuComplex *dev_gamma_array,
-			POINTER(c_complex), # cuComplex *dev_solution,
-			POINTER(c_complex), # cuComplex *dev_matmul_out_extended,
-			c_uint,             # cufftHandle plan,
-			c_uint              # const unsigned int N
+			POINTER(c_complex), # cuComplex          *dev_gamma_array
+			POINTER(c_complex), # cuComplex          *dev_solution
+			POINTER(c_complex), # cuComplex          *dev_matmul_out_extended
+			c_uint,             # cufftHandle         plan
+			c_uint,             # const unsigned int  N
+      c_float,            # const float         wave_number
+      c_float,            # const float         epsilon_internal
+      c_float             # const float         epsilon_external
 						]
 
 pycu2Dto1Dgrad = get_function('pycu2Dto1Dgrad', path_to_so)
 pycu2Dto1Dgrad.argtypes = [	
-			POINTER(c_complex),	# cuComplex *dev_solution, 
-			POINTER(c_complex),	# cuComplex *dev_new_z_extended, 
-			POINTER(c_float),	# float *dev_gradient, 
-			c_uint,			# const unsigned int h_index_of_max,
-			c_uint			# const unsigned int N)
+			POINTER(c_complex),	# cuComplex          *dev_solution
+			POINTER(c_complex),	# cuComplex          *dev_new_z_extended
+			POINTER(c_float),	  # float              *dev_gradient
+			c_uint,             # const unsigned int  h_index_of_max
+			c_uint,             # const unsigned int  N
+      c_float,            # const float         wave_number
+      c_float,            # const float         epsilon_internal
+      c_float             # const float         epsilon_external
 						]

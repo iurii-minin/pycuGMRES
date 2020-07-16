@@ -324,7 +324,12 @@ __global__ void _2D_to_1D_compared_kernel(bool *dev_mask, cuComplex *input_mul, 
 }
 
 
-__global__ void _2D_to_1D_compared_kernel(cuComplex *input_mul, cuComplex *_2D_in, cuComplex *residual, const unsigned int N)
+__global__ void _2D_to_1D_compared_kernel(
+			cuComplex *input_mul, 
+			cuComplex *_2D_in, 
+			cuComplex *residual, 
+			const unsigned int N,
+			const float wave_number)
 { 
 	unsigned int i = Q * blockIdx.x + threadIdx.x;
 	unsigned int j = Q * blockIdx.y + threadIdx.y;
@@ -340,7 +345,7 @@ __global__ void _2D_to_1D_compared_kernel(cuComplex *input_mul, cuComplex *_2D_i
 		cuComplex arg_old = input_mul[_1D_index];
 		cuComplex Input_Field;
 
-		Input_Field.y = - WAVE_NUMBER * (i * cos(ALPHA) + j * sin(ALPHA));
+		Input_Field.y = - wave_number * (i * cos(ALPHA) + j * sin(ALPHA));
 		Input_Field = my_cexpf(Input_Field);
 		//float sigma = 400.f;
 		//Input_Field.x = Input_Field.x * exp(-pow((float)((float)(j) - 512.f), 2.f)/pow(sigma, 2.f))/(sigma * sqrt(7.28f));

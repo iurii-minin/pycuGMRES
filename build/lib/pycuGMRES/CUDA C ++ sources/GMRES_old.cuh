@@ -23,8 +23,14 @@ void pycuGMRESold(
 			cublasHandle_t *handle_p,
 			cusolverDnHandle_t *cusolverH_p,
 			devSubsidiary *dev_subs,
-			timespec *h_computation_times_ts)
+			timespec *h_computation_times_ts,
+			const float wavenumber,
+			const float eps_in,
+			const float eps_ex
+)
 {
+	const float chi = ( eps_in - eps_ex ) * wavenumber * wavenumber;
+
 	cusolverDnHandle_t cusolverH = *cusolverH_p;
   time_t *h_computation_times = (time_t *)malloc(300000 * sizeof(time_t));
 
@@ -90,7 +96,8 @@ void pycuGMRESold(
 		G_x_fft_matvec(	(cuComplex *)dev_gamma_array,
 			(cuComplex *)dev_solution,
 			(cuComplex *)dev_matmul_out_extended,
-			(cufftHandle)plan, N);
+			(cufftHandle)plan,
+			N, chi);
 
 		h_computation_times[clock_i++] = clock(); //_2_
 
@@ -98,7 +105,8 @@ void pycuGMRESold(
 									(cuComplex *)dev_solution,
 									(cuComplex*)dev_matmul_out_extended,
 									(cuComplex*)dev_residual_vec,
-									h_index_of_max, N);
+									h_index_of_max,
+									N);
 	}
 	else
 	{
@@ -106,14 +114,15 @@ void pycuGMRESold(
 			(bool *)dev_mask,
 			(cuComplex *)dev_solution,
 			(cuComplex *)dev_matmul_out_extended,
-			(cufftHandle)plan, N);
+			(cufftHandle)plan,
+			N, chi);
 
 		h_computation_times[clock_i++] = clock(); //_2_
 
 		_2D_to_1D_compared_kernel <<< blocks, threads >>> (	(cuComplex *)dev_solution,
 									(cuComplex*)dev_matmul_out_extended,
 									(cuComplex*)dev_residual_vec, 
-									h_sigma, N);
+									h_sigma, N, wavenumber);
 	}
 	cudacheckSYN();
 
@@ -156,7 +165,8 @@ void pycuGMRESold(
 			G_x_fft_matvec(	(cuComplex *)dev_gamma_array,
 					(cuComplex *)dev_orthogonal_basis,
 					(cuComplex *)dev_matmul_out_extended,
-					(cufftHandle) plan, N);
+					(cufftHandle) plan,
+					N, chi);
 
 			h_computation_times[clock_i ++] = clock(); //_8_
 
@@ -171,7 +181,8 @@ void pycuGMRESold(
 					(bool *)dev_mask,
 					(cuComplex *)dev_orthogonal_basis,
 					(cuComplex *)dev_matmul_out_extended,
-					(cufftHandle) plan, N);
+					(cufftHandle) plan,
+					N, chi);
 
 			h_computation_times[clock_i ++] = clock(); //_8_
 
@@ -287,7 +298,8 @@ void pycuGMRESold(
 				G_x_fft_matvec(	(cuComplex *)dev_gamma_array,
 						(cuComplex *)dev_orthogonal_basis + GMRES_i * N * N,
 						(cuComplex *)dev_matmul_out_extended,
-						(cufftHandle) plan, N);
+						(cufftHandle) plan,
+						N, chi);
 
 				h_computation_times[clock_i ++] = clock(); //_19_
 
@@ -302,7 +314,8 @@ void pycuGMRESold(
 						(bool *)dev_mask,
 						(cuComplex *)dev_orthogonal_basis + GMRES_i * N * N,
 						(cuComplex *)dev_matmul_out_extended,
-						(cufftHandle) plan, N);
+						(cufftHandle) plan,
+						N, chi);
 
 				h_computation_times[clock_i ++] = clock(); //_19_
 

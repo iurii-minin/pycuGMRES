@@ -20,25 +20,30 @@ void show_norm_F(	const char *description,
 			const unsigned int size_array);
 
 void pycuGMRESimproved(	
-                    bool *dev_mask,
-                    cuComplex *dev_solution,
-		    const bool for_gradient,
-		    const unsigned int h_index_of_max,
-		    const float h_sigma,
-		    unsigned int maxiter,
-		    const float tolerance,
-		    unsigned int *GMRES_n,
-		    float *dev_actual_residual,
-		    bool *h_res_vs_tol_p,
-		    const unsigned int N,
-                    cuComplex *dev_gamma_array,
-                    const cufftHandle plan,
-                    cublasHandle_t *handle_p,
-                    cusolverDnHandle_t *cusolverH_p,
-                    devSubsidiary *dev_subs,
-                    timespec *h_computation_times
+				bool *dev_mask,
+				cuComplex *dev_solution,
+				const bool for_gradient,
+				const unsigned int h_index_of_max,
+				const float h_sigma,
+				unsigned int maxiter,
+				const float tolerance,
+				unsigned int *GMRES_n,
+				float *dev_actual_residual,
+				bool *h_res_vs_tol_p,
+				const unsigned int N,
+				cuComplex *dev_gamma_array,
+				const cufftHandle plan,
+				cublasHandle_t *handle_p,
+				cusolverDnHandle_t *cusolverH_p,
+				devSubsidiary *dev_subs,
+				timespec *h_computation_times,
+				const float wavenumber,
+				const float eps_in,
+				const float eps_ex
                )
 {
+	const float chi = ( eps_in - eps_ex ) * wavenumber * wavenumber;
+
 	unsigned int clock_i = 0;
 
 	clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_0_
@@ -100,7 +105,8 @@ void pycuGMRESimproved(
 		G_x_fft_matvec(	(cuComplex *)dev_gamma_array,
 				(cuComplex *)dev_solution,
 				(cuComplex *)dev_extended,
-				(cufftHandle)plan, N);
+				(cufftHandle)plan, 
+				N, chi);
 
 		clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_2_
 
@@ -117,7 +123,7 @@ void pycuGMRESimproved(
 				(cuComplex *)dev_solution,
 				(cuComplex *)dev_extended,
 				(cufftHandle)plan, 
-				N);
+				N, chi);
 
 		clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_2_
 
@@ -125,7 +131,7 @@ void pycuGMRESimproved(
 									(cuComplex *)dev_solution,
 									(cuComplex *)dev_extended,
 									(cuComplex *)dev_vec_resudual,
-									h_sigma, N);
+									h_sigma, N, wavenumber);
 	}
 	cudacheckSYN();
 
@@ -167,7 +173,8 @@ void pycuGMRESimproved(
 			G_x_fft_matvec(	(cuComplex *)dev_gamma_array,
 					(cuComplex *)dev_orthogonal_basis,
 					(cuComplex *)dev_extended,
-					(cufftHandle)plan, N);
+					(cufftHandle)plan,
+					N, chi);
 
 			clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_8_
 
@@ -182,7 +189,8 @@ void pycuGMRESimproved(
 					(bool *)dev_mask,
 					(cuComplex *)dev_orthogonal_basis,
 					(cuComplex *)dev_extended,
-					(cufftHandle)plan, N);
+					(cufftHandle)plan,
+					N, chi);
 
 			clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_8_
 
@@ -273,7 +281,8 @@ void pycuGMRESimproved(
 				G_x_fft_matvec(	(cuComplex *)dev_gamma_array,
 						(cuComplex *)dev_orthogonal_basis + GMRES_i * N * N,
 						(cuComplex *)dev_extended,
-						(cufftHandle)plan, N);
+						(cufftHandle)plan,
+						N, chi);
 
 				clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_19_
 
@@ -288,7 +297,8 @@ void pycuGMRESimproved(
 						(bool *)dev_mask,
 						(cuComplex *)dev_orthogonal_basis + GMRES_i * N * N,
 						(cuComplex *)dev_extended,
-						(cufftHandle)plan, N);
+						(cufftHandle)plan,
+						N, chi);
 
 				clock_gettime(CLOCK_REALTIME, h_computation_times + clock_i++); //_19_
 

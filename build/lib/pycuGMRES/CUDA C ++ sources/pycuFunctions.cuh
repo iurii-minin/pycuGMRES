@@ -10,15 +10,18 @@ void pycuSetDevice(const unsigned int visible_device)
 }
 
 void pycuInitSolution(
-		        cuComplex *dev_solution,
-						const float h_sigma,
-		        const unsigned int N     
+			cuComplex *dev_solution,
+			const float h_sigma,
+			const unsigned int N,
+			const float wavenumber     
                      )
 {
 		dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
 		dim3 threads(Q, Q);
 
-		init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, h_sigma, N);
+		init_x0_kernel <<< blocks, threads >>> (
+			(cuComplex *)dev_solution, 
+			h_sigma, N, wavenumber);
 		cudacheckSYN();
 }
 
@@ -193,13 +196,18 @@ void pycuGxFFTmatvec_grad(
 			cuComplex *dev_solution,
 			cuComplex *dev_matmul_out_extended,
 			cufftHandle plan,
-			const unsigned int N)
+			const unsigned int N,
+			const float wavenumber,
+			const float eps_in,
+			const float eps_ex)
 {
+	const float chi = ( eps_in - eps_ex ) * wavenumber * wavenumber;
+
 	G_x_fft_matvec(	(cuComplex  *)dev_gamma_array, // For gradient matvec (dev_mask is absent)
 			(cuComplex  *)dev_solution,
 			(cuComplex  *)dev_matmul_out_extended,
 			(cufftHandle )plan,
-										N);
+			N, chi);
 }
 
 void pycu2Dto1Dgrad( //For gradient computations
@@ -207,8 +215,13 @@ void pycu2Dto1Dgrad( //For gradient computations
 					cuComplex *dev_new_z_extended, 
 					float *dev_gradient, 
 					const unsigned int h_index_of_max,
-					const unsigned int N)
+					const unsigned int N,
+					const float wavenumber,
+					const float eps_in,
+					const float eps_ex)
 {
+	const float chi = ( eps_in - eps_ex ) * wavenumber * wavenumber;
+
 	dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
 	dim3 threads(Q, Q);
 
@@ -217,6 +230,7 @@ void pycu2Dto1Dgrad( //For gradient computations
 					(cuComplex    *)dev_new_z_extended, 
 					(float        *)dev_gradient, 
 													h_index_of_max,
-													N);
+													N,
+					                chi);
 	cudacheckSYN();
 }

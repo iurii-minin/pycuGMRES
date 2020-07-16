@@ -9,14 +9,15 @@
 //void __syncthreads();
 //#endif
 
-#define WAVE_NUMBER 2*3.14f/(N/6.f)
+//#define wavenumber 2*3.14f/(N/6.f)
 #define Q 32
 #define THREADS_PER_BLOCK N / Q
 #define THREADS_PER_BLOCK_M THREADS_PER_BLOCK * 2
 #define E0 1
 #define ALPHA 3.14*0/180
-#define EPSILON 2.25f
-#define CHI (EPSILON-1)*WAVE_NUMBER*WAVE_NUMBER
+//#define EPSILON 2.25f
+//#define EPS0 1.00f
+//#define CHI (EPSILON-EPS0)*wavenumber*wavenumber
 #define PRECISION_TO_SAVE_DATA_TO_FILE 9
 #define cudacall(call)                                                                                                          \
     do                                                                                                                          \
@@ -95,7 +96,12 @@
 
 
 
-__global__ void extend_by_zeros_kernel(bool *dev_mask, cuComplex *dev_usual, cuComplex *dev_extended, const unsigned int N) //For usual matvec (mask is present)
+__global__ void extend_by_zeros_kernel(
+		bool *dev_mask, 
+		cuComplex *dev_usual, 
+		cuComplex *dev_extended, 
+		const unsigned int N, 
+		const float chi) //For usual matvec (mask is present)
 {
 	unsigned int i = Q * blockIdx.x + threadIdx.x;
 	unsigned int j = Q * blockIdx.y + threadIdx.y;
@@ -109,8 +115,8 @@ __global__ void extend_by_zeros_kernel(bool *dev_mask, cuComplex *dev_usual, cuC
 		unsigned int index_extended = index + Ni - i;
 		if ((i < N) && (j < N) && (dev_mask[index]))
 		{
-			current.x = CHI * dev_usual[index].x;
-			current.y = CHI * dev_usual[index].y;
+			current.x = chi * dev_usual[index].x;
+			current.y = chi * dev_usual[index].y;
 		}
 		else
 		{
@@ -121,9 +127,11 @@ __global__ void extend_by_zeros_kernel(bool *dev_mask, cuComplex *dev_usual, cuC
 }
 
 
-__global__ void extend_by_zeros_kernel(	cuComplex *dev_usual,  //For Gradient matvec (mask is absent)
-					cuComplex *dev_extended,
-					const unsigned int N)
+__global__ void extend_by_zeros_kernel(	
+		cuComplex *dev_usual,  //For Gradient matvec (mask is absent)
+		cuComplex *dev_extended,
+		const unsigned int N,
+		const float chi)
 {
 	unsigned int i = Q * blockIdx.x + threadIdx.x;
 	unsigned int j = Q * blockIdx.y + threadIdx.y;
@@ -137,8 +145,8 @@ __global__ void extend_by_zeros_kernel(	cuComplex *dev_usual,  //For Gradient ma
 		unsigned int index_extended = index + Ni - i;
 		if ((i < N) && (j < N))
 		{
-			current.x = CHI * dev_usual[index].x;
-			current.y = CHI * dev_usual[index].y;
+			current.x = chi * dev_usual[index].x;
+			current.y = chi * dev_usual[index].y;
 		}
 		else
 		{
@@ -180,12 +188,13 @@ __global__ void _2D_to_1D_compared_kernel(	cuComplex *dev_input_mul,  //For GMRE
 						cuComplex *dev_2D_in,
 						cuComplex *dev_residual,
 						const float h_sigma,
-						const unsigned int N)
+						const unsigned int N,
+						const float wavenumber)
 {
 	unsigned int i = Q * blockIdx.x + threadIdx.x;
 	unsigned int j = Q * blockIdx.y + threadIdx.y;
 	unsigned int size_limit = (N << 1) - 1;
-
+	
 	if ((i < size_limit) && (j < size_limit))
 	{
 		unsigned int Ni = N * i;
@@ -195,7 +204,7 @@ __global__ void _2D_to_1D_compared_kernel(	cuComplex *dev_input_mul,  //For GMRE
 		cuComplex arg_old = dev_input_mul[_1D_index];
 		cuComplex Input_Field;
 
-		Input_Field.y = - WAVE_NUMBER * (i * cos(ALPHA) + j * sin(ALPHA));
+		Input_Field.y = - wavenumber * (i * cos(ALPHA) + j * sin(ALPHA));
 		Input_Field = my_cexpf(Input_Field);
 
 		if (h_sigma > 0.f)
@@ -348,7 +357,8 @@ __global__ void _2D_to_1D_kernel(
 					cuComplex *dev_new_z_extended, 
 					float *dev_gradient, 
 					const unsigned int h_index_of_max,
-					const unsigned int N)
+					const unsigned int N,
+					const float chi)
 { 
 	unsigned int i = Q * blockIdx.x + threadIdx.x;
 	unsigned int j = Q * blockIdx.y + threadIdx.y;
@@ -357,8 +367,8 @@ __global__ void _2D_to_1D_kernel(
 	unsigned int _2D_index = _1D_index + Ni - i;
 	cuComplex dev_new_z = dev_new_z_extended[_2D_index];
 	cuComplex dev_x = dev_solution[_1D_index];
-	dev_new_z.x = CHI * (dev_new_z.x * dev_x.x - dev_new_z.y * dev_x.y);
-	dev_new_z.y = CHI * (dev_new_z.x * dev_x.y + dev_new_z.y * dev_x.x);
+	dev_new_z.x = chi * (dev_new_z.x * dev_x.x - dev_new_z.y * dev_x.y);
+	dev_new_z.y = chi * (dev_new_z.x * dev_x.y + dev_new_z.y * dev_x.x);
 
 	dev_new_z.x = dev_new_z.x * dev_solution[h_index_of_max].x + dev_new_z.y * dev_solution[h_index_of_max].y;
 
@@ -597,13 +607,14 @@ __global__ void add_kernel(	cuComplex *dev_solution,
 
 __global__ void init_x0_kernel(	cuComplex *dev_input,
 				const float h_sigma,
-				const unsigned int N)
+				const unsigned int N,
+				const float wavenumber)
 {
 	unsigned int i = Q * blockIdx.x + threadIdx.x;
 	unsigned int j = Q * blockIdx.y + threadIdx.y;
 	cuComplex Input_Field;
 
-	Input_Field.y = - WAVE_NUMBER * (i * cos(ALPHA) + j * sin(ALPHA));
+	Input_Field.y = - wavenumber * (i * cos(ALPHA) + j * sin(ALPHA));
 	Input_Field = my_cexpf(Input_Field);
 	if (h_sigma > 0.f)
 	{
