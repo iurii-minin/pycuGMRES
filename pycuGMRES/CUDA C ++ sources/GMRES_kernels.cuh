@@ -189,7 +189,7 @@ __global__ void _2D_to_1D_compared_kernel(	cuComplex *dev_input_mul,  //For GMRE
 						cuComplex *dev_residual,
 						const float h_sigma,
 						const unsigned int N,
-						const float wavenumber)
+						const float wavenumber_ref)
 {
 	unsigned int i = Q * blockIdx.x + threadIdx.x;
 	unsigned int j = Q * blockIdx.y + threadIdx.y;
@@ -204,7 +204,7 @@ __global__ void _2D_to_1D_compared_kernel(	cuComplex *dev_input_mul,  //For GMRE
 		cuComplex arg_old = dev_input_mul[_1D_index];
 		cuComplex Input_Field;
 
-		Input_Field.y = - wavenumber * (i * cos(ALPHA) + j * sin(ALPHA));
+		Input_Field.y = - wavenumber_ref * (i * cos(ALPHA) + j * sin(ALPHA));
 		Input_Field = my_cexpf(Input_Field);
 
 		if (h_sigma > 0.f)
@@ -608,13 +608,13 @@ __global__ void add_kernel(	cuComplex *dev_solution,
 __global__ void init_x0_kernel(	cuComplex *dev_input,
 				const float h_sigma,
 				const unsigned int N,
-				const float wavenumber)
+				const float wavenumber_ref)
 {
 	unsigned int i = Q * blockIdx.x + threadIdx.x;
 	unsigned int j = Q * blockIdx.y + threadIdx.y;
 	cuComplex Input_Field;
 
-	Input_Field.y = - wavenumber * (i * cos(ALPHA) + j * sin(ALPHA));
+	Input_Field.y = - wavenumber_ref * (i * cos(ALPHA) + j * sin(ALPHA));
 	Input_Field = my_cexpf(Input_Field);
 	if (h_sigma > 0.f)
 	{

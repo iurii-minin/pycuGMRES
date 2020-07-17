@@ -43,6 +43,7 @@ void pycuGMRESimproved(
                )
 {
 	const float chi = ( eps_in - eps_ex ) * wavenumber * wavenumber;
+	const float wavenumber_ref = wavenumber * sqrt(eps_ex);
 
 	unsigned int clock_i = 0;
 
@@ -74,6 +75,7 @@ void pycuGMRESimproved(
 	cuComplex *dev_Givens_rotation_2	 = NULL;
 	cuComplex *dev_Givens_rotation_3	 = NULL;
 	cuComplex *dev_buffer_LES_cc		 = NULL;
+
 
 	int *dev_info 				 = dev_subs->dev_info;
 	int *dev_Ipiv 				 = NULL;
@@ -112,8 +114,8 @@ void pycuGMRESimproved(
 
 		_2D_to_1D_compared_kernel <<< blocks, threads >>> (	(bool *)dev_mask,
 									(cuComplex *)dev_solution,
-									(cuComplex*)dev_extended,
-									(cuComplex*)dev_vec_resudual,
+									(cuComplex *)dev_extended,
+									(cuComplex *)dev_vec_resudual,
 									h_index_of_max, N);
 	}
 	else
@@ -131,7 +133,7 @@ void pycuGMRESimproved(
 									(cuComplex *)dev_solution,
 									(cuComplex *)dev_extended,
 									(cuComplex *)dev_vec_resudual,
-									h_sigma, N, wavenumber);
+									h_sigma, N, wavenumber_ref);
 	}
 	cudacheckSYN();
 

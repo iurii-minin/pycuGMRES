@@ -30,6 +30,7 @@ void pycuGMRESold(
 )
 {
 	const float chi = ( eps_in - eps_ex ) * wavenumber * wavenumber;
+	const float wavenumber_ref = wavenumber * sqrt(eps_ex);
 
 	cusolverDnHandle_t cusolverH = *cusolverH_p;
   time_t *h_computation_times = (time_t *)malloc(300000 * sizeof(time_t));
@@ -122,7 +123,7 @@ void pycuGMRESold(
 		_2D_to_1D_compared_kernel <<< blocks, threads >>> (	(cuComplex *)dev_solution,
 									(cuComplex*)dev_matmul_out_extended,
 									(cuComplex*)dev_residual_vec, 
-									h_sigma, N, wavenumber);
+									h_sigma, N, wavenumber_ref);
 	}
 	cudacheckSYN();
 

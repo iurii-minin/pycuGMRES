@@ -218,7 +218,8 @@ pycuInitSolution.argtypes = [
 				POINTER(c_complex), # cuComplex          *dev_solution
 				c_float,            # const float         h_sigma
 				c_uint,             # const unsigned int  N
-				c_float             # const float         wavenumber     
+				c_float,            # const float         wavenumber
+				c_float             # const float         epsilon_external
 				]
 
 pycuSetDevice = get_function('pycuSetDevice', path_to_so)

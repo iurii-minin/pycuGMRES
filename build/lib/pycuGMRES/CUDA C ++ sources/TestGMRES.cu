@@ -189,9 +189,10 @@ void pycuTestGMRES()
 					const float wavenumber = 2*3.14f/(N/6.f);
 					const float eps_in = 2.25f;
 					const float eps_ex = 1.00f;
+					const float wavenumber_ref = wavenumber * sqrt(eps_ex);
 
 
-					init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, -1.f, N, wavenumber);
+					init_x0_kernel <<< blocks, threads >>> ((cuComplex *)dev_solution, -1.f, N, wavenumber_ref);
 					cudacheckSYN();
 
 					memset(h_computation_times, 0, n_timestamps_array[maxiter] * sizeof(timespec));

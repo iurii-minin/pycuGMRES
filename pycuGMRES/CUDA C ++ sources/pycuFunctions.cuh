@@ -13,15 +13,17 @@ void pycuInitSolution(
 			cuComplex *dev_solution,
 			const float h_sigma,
 			const unsigned int N,
-			const float wavenumber     
+			const float wavenumber,
+			const float eps_ex
                      )
 {
 		dim3 blocks(THREADS_PER_BLOCK, THREADS_PER_BLOCK);
 		dim3 threads(Q, Q);
+		const float wavenumber_ref = wavenumber * sqrt(eps_ex);
 
 		init_x0_kernel <<< blocks, threads >>> (
 			(cuComplex *)dev_solution, 
-			h_sigma, N, wavenumber);
+			h_sigma, N, wavenumber_ref);
 		cudacheckSYN();
 }
 
