@@ -1,4 +1,4 @@
-version = "1.1.4.7.1"
+version = "1.1.4.7.2"
 
 from setuptools import setup
 
