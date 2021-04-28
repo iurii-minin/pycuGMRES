@@ -26,8 +26,11 @@ void pycuGMRESold(
 			timespec *h_computation_times_ts,
 			const float wavenumber,
 			const float eps_in,
-			const float eps_ex
-)
+			const float eps_ex,
+			void* devh_debug1,
+			void* devh_debug2,
+			void* devh_debug3  
+		)
 {
 	const float chi = ( eps_in - eps_ex ) * wavenumber * wavenumber;
 	const float wavenumber_ref = wavenumber * sqrt(eps_ex);

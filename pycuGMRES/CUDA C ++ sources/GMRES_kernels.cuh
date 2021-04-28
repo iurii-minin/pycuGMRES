@@ -209,8 +209,8 @@ __global__ void _2D_to_1D_compared_kernel(	cuComplex *dev_input_mul,  //For GMRE
 
 		if (h_sigma > 0.f)
 		{
-			Input_Field.x = Input_Field.x * exp(-pow((float)((float)(j) - (N/2.f - 0.5f)), 2.f)/pow(h_sigma, 2.f))/(h_sigma * sqrt(2.f * 3.14f));
-			Input_Field.y = Input_Field.y * exp(-pow((float)((float)(j) - (N/2.f - 0.5f)), 2.f)/pow(h_sigma, 2.f))/(h_sigma * sqrt(2.f * 3.14f));
+			Input_Field.x = Input_Field.x * exp(-pow((float)((float)(j) - (N / 2.f - 0.5f)), 2.f)/pow(h_sigma, 2.f))/(h_sigma * sqrt(2.f * 3.14f));
+			Input_Field.y = Input_Field.y * exp(-pow((float)((float)(j) - (N / 2.f - 0.5f)), 2.f)/pow(h_sigma, 2.f))/(h_sigma * sqrt(2.f * 3.14f));
 		}
 
 		Input_Field.x += current_2D.x / ((N << 1) - 1) / ((N << 1) - 1) - arg_old.x;
@@ -256,7 +256,7 @@ __global__ void _2D_to_1D_compared_kernel(	bool *dev_mask,  //For Gradient of He
 }
 
 
-__global__ void residual_normalization_kernel(	cuComplex *dev_residual_vec,
+__global__ void residual_normalization_kernel(cuComplex *dev_residual_vec,
 						float *dev_norm_res_vec,
 						cuComplex *dev_orthogonal_basis)
 {

@@ -330,7 +330,10 @@ pycuGMRESold.argtypes = [
                       POINTER(c_timespec),       # timespec *computation_times
                       c_float,                   # const float wave_number
                       c_float,                   # const float epsilon_internal
-                      c_float                    # const float epsilon_external
+                      c_float,                   # const float epsilon_external
+                      c_void_p,                  # void* devh_debug1,
+                      c_void_p,                  # void* devh_debug2,
+                      c_void_p                   # void* devh_debug3
                                            ]
 
 pycuGxFFTmatvec_grad = get_function('pycuGxFFTmatvec_grad', path_to_so)

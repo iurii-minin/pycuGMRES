@@ -211,8 +211,14 @@ void pycuTestGMRES()
  								maxiter,
 								(cusolverDnHandle_t)cusolverH,
 								(timespec *)h_computation_times, N);
+								
+													
 
-*/					pycuGMRESold(	
+*/					void *devh_debug1;
+					void *devh_debug2;
+					void *devh_debug3;
+					
+					pycuGMRESold(	
 							    (bool *)dev_mask,
 							    (cuComplex *)dev_solution,
 							    false,
@@ -231,8 +237,11 @@ void pycuTestGMRES()
 							    (devSubsidiary *)dev_subs,
 							    (timespec *)h_computation_times,
 							    wavenumber,
-									eps_in,
-									eps_ex
+							eps_in,
+							eps_ex,
+							devh_debug1,
+							devh_debug2,
+							devh_debug3   
 						);
 
 					diff_time = (float)(clock() - clock_time) / (float)(CLOCKS_PER_SEC);
@@ -292,7 +301,7 @@ void pycuTestGMRES()
 				cusolverDnDestroy(cusolverH);
 				free((timespec *)h_computation_times);
 				cublascall(cublasDestroy_v2(handle));
-                                cudacall(cudaFree((float *)dev_actual_residual));
+                               cudacall(cudaFree((float *)dev_actual_residual));
 			}
 		}
 	}
