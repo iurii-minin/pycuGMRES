@@ -50,7 +50,7 @@ void pycuTestGMRES()
 		p_h_anal_sols[pow_cur - pow_st] = (cuComplex *) malloc( N * N * sizeof(cuComplex) );
 
 		std::string line;
-		sprintf(buffer, "/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Input/analytical_solution_%u.txt", N);
+		sprintf(buffer, "/mnt/779188A965FF7E0F/Archive/analytical_solution_%u.txt", N);
 		std::ifstream analytical_solution_file (buffer);//Python_analytical_solution_%u
 		if (analytical_solution_file.is_open())
 		{
@@ -75,7 +75,7 @@ void pycuTestGMRES()
 
 		p_h_masks[pow_cur - pow_st] = (bool *) malloc(N * N * sizeof(bool));
 
-		sprintf(buffer, "/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Input/cylinder_%u.txt", N);
+		sprintf(buffer, "/mnt/779188A965FF7E0F/Archive/cylinder_%u.txt", N);
 		std::ifstream myfile (buffer);
 		if (myfile.is_open())
 		{
@@ -94,7 +94,7 @@ void pycuTestGMRES()
 
 		p_h_gamma_arrays[pow_cur - pow_st] = (cuComplex *)malloc((2 * N - 1) * (2 * N - 1) * sizeof(cuComplex));
 	
-		sprintf(buffer, "/media/linux/4db3d51d-3503-451d-aff7-07e3ce95927e/Archive/Input/G_prep_%u.txt", N);
+		sprintf(buffer, "/mnt/779188A965FF7E0F/Archive/G_prep_%u.txt", N);
 		get_array_C_to_CPU((cuComplex *)p_h_gamma_arrays[pow_cur - pow_st], (const char *)buffer);
 	}
 

@@ -1,4 +1,4 @@
-version = "1.1.4.7.0"
+version = "1.1.4.7.1"
 
 from setuptools import setup
 
@@ -9,7 +9,7 @@ setup(name='pycuGMRES',
       version = version,
       description = 'Fast CUDA C++ GMRES implementation for Toeplitz-like (Toeplitz, Hankel, Circulant) matrices and mixed (combinations of Diagonal ones and Toeplitz-like ones) matrices.',
       long_description = long_description,
-      url='https://github.com/archilless/pycuGMRES',
+      url='https://github.com/iurii-minin/pycuGMRES',
       author='Iurii Borisovich Minin',
       author_email='iurii.minin@skoltech.ru', #yurii.minin@phystech.edu
       license='MIT',

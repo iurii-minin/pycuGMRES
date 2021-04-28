@@ -1,8 +1,8 @@
 Metadata-Version: 1.1
 Name: pycuGMRES
-Version: 1.1.4.7.0
+Version: 1.1.4.7.1
 Summary: Fast CUDA C++ GMRES implementation for Toeplitz-like (Toeplitz, Hankel, Circulant) matrices and mixed (combinations of Diagonal ones and Toeplitz-like ones) matrices.
-Home-page: https://github.com/archilless/pycuGMRES
+Home-page: https://github.com/iurii-minin/pycuGMRES
 Author: Iurii Borisovich Minin
 Author-email: iurii.minin@skoltech.ru
 License: MIT
